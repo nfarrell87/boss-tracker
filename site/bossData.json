@@ -9,6 +9,18 @@
   ],
   "Ancient Hermit": [
     {
+      "killedAt": 1744895959,
+      "killedBy": "1 members of  Hibernia",
+      "duration": "51s",
+      "zone": "Cathal Valley"
+    },
+    {
+      "killedAt": 1744894731,
+      "killedBy": "2 members of  Hibernia",
+      "duration": "29s",
+      "zone": "Cathal Valley"
+    },
+    {
       "killedAt": 1744892807,
       "killedBy": "2 members of  Hibernia",
       "duration": "1m 06s",
@@ -24,18 +36,6 @@
       "killedAt": 1744891334,
       "killedBy": "2 members of  Hibernia",
       "duration": "1m 05s",
-      "zone": "Cathal Valley"
-    },
-    {
-      "killedAt": 1744888337,
-      "killedBy": "5 members of  Midgard",
-      "duration": "14s",
-      "zone": "Cathal Valley"
-    },
-    {
-      "killedAt": 1744887671,
-      "killedBy": "1 members of  Albion",
-      "duration": "33s",
       "zone": "Cathal Valley"
     }
   ],
@@ -79,6 +79,12 @@
   ],
   "Evern": [
     {
+      "killedAt": 1744896709,
+      "killedBy": "32 members of  Albion",
+      "duration": "45s",
+      "zone": "Breifine"
+    },
+    {
       "killedAt": 1744884831,
       "killedBy": "54 members of Hibernia",
       "duration": "22s",
@@ -111,6 +117,18 @@
   ],
   "Danos": [
     {
+      "killedAt": 1744897596,
+      "killedBy": "5 members of  Albion",
+      "duration": "3m 50s",
+      "zone": "Green Glades"
+    },
+    {
+      "killedAt": 1744895506,
+      "killedBy": "12 members of  Midgard",
+      "duration": "4m 23s",
+      "zone": "Green Glades"
+    },
+    {
       "killedAt": 1744892508,
       "killedBy": "4 members of  Albion",
       "duration": "7m 04s",
@@ -127,15 +145,15 @@
       "killedBy": "4 members of  Albion",
       "duration": "8m 30s",
       "zone": "Green Glades"
-    },
-    {
-      "killedAt": 1744885689,
-      "killedBy": "7 members of Hibernia",
-      "duration": "3m 36s",
-      "zone": "Green Glades"
     }
   ],
   "Sarnvasath": [
+    {
+      "killedAt": 1744896699,
+      "killedBy": "71 members of  Hibernia",
+      "duration": "28s",
+      "zone": "Emain Macha"
+    },
     {
       "killedAt": 1744887942,
       "killedBy": "34 members of  Midgard",
@@ -175,6 +193,12 @@
   ],
   "Aidon the Archwizard": [
     {
+      "killedAt": 1744896009,
+      "killedBy": "156 members of  Albion",
+      "duration": "08s",
+      "zone": "Summoner's Hall"
+    },
+    {
       "killedAt": 1744887428,
       "killedBy": "69 members of  Midgard",
       "duration": "28s",
@@ -183,6 +207,12 @@
   ],
   "Summoner Roesia": [
     {
+      "killedAt": 1744896159,
+      "killedBy": "160 members of  Albion",
+      "duration": "13s",
+      "zone": "Summoner's Hall"
+    },
+    {
       "killedAt": 1744887568,
       "killedBy": "71 members of  Midgard",
       "duration": "17s",
@@ -190,6 +220,12 @@
     }
   ],
   "Summoner Cunovinda": [
+    {
+      "killedAt": 1744896263,
+      "killedBy": "156 members of  Albion",
+      "duration": "12s",
+      "zone": "Summoner's Hall"
+    },
     {
       "killedAt": 1744887692,
       "killedBy": "71 members of  Midgard",
@@ -206,6 +242,12 @@
     }
   ],
   "Summoner Lossren": [
+    {
+      "killedAt": 1744896622,
+      "killedBy": "159 members of  Albion",
+      "duration": "13s",
+      "zone": "Summoner's Hall"
+    },
     {
       "killedAt": 1744887863,
       "killedBy": "70 members of  Midgard",
@@ -229,6 +271,12 @@
   ],
   "Eramai": [
     {
+      "killedAt": 1744894488,
+      "killedBy": "4 members of  Midgard",
+      "duration": "3m 18s",
+      "zone": "Green Glades"
+    },
+    {
       "killedAt": 1744888582,
       "killedBy": "8 members of  Hibernia",
       "duration": "1m 34s",
@@ -244,6 +292,12 @@
     }
   ],
   "Grand Summoner Govannon": [
+    {
+      "killedAt": 1744896394,
+      "killedBy": "161 members of  Albion",
+      "duration": "1m 19s",
+      "zone": "Summoner's Hall"
+    },
     {
       "killedAt": 1744889144,
       "killedBy": "68 members of  Midgard",
@@ -313,6 +367,174 @@
       "killedBy": "116 members of  Hibernia",
       "duration": "23s",
       "zone": "City of Aerus"
+    }
+  ],
+  "The Tactician": [
+    {
+      "killedAt": 1744894029,
+      "killedBy": "110 members of  Hibernia",
+      "duration": "19s",
+      "zone": "City of Aerus"
+    }
+  ],
+  "High Lord Oro": [
+    {
+      "killedAt": 1744894062,
+      "killedBy": "148 members of  Midgard",
+      "duration": "23s",
+      "zone": "Darkness Falls"
+    }
+  ],
+  "The Terrible": [
+    {
+      "killedAt": 1744894071,
+      "killedBy": "110 members of  Hibernia",
+      "duration": "15s",
+      "zone": "City of Aerus"
+    }
+  ],
+  "The Coward": [
+    {
+      "killedAt": 1744894131,
+      "killedBy": "110 members of  Hibernia",
+      "duration": "43s",
+      "zone": "City of Aerus"
+    }
+  ],
+  "The Brave": [
+    {
+      "killedAt": 1744894221,
+      "killedBy": "110 members of  Hibernia",
+      "duration": "20s",
+      "zone": "City of Aerus"
+    }
+  ],
+  "Puissant Iaculus": [
+    {
+      "killedAt": 1744894401,
+      "killedBy": "110 members of  Hibernia",
+      "duration": "48s",
+      "zone": "City of Aerus"
+    }
+  ],
+  "High Lord Baln": [
+    {
+      "killedAt": 1744894467,
+      "killedBy": "146 members of  Midgard",
+      "duration": "2m 28s",
+      "zone": "Darkness Falls"
+    }
+  ],
+  "High Lord Saeor": [
+    {
+      "killedAt": 1744894586,
+      "killedBy": "146 members of  Midgard",
+      "duration": "39s",
+      "zone": "Darkness Falls"
+    }
+  ],
+  "Uamhas": [
+    {
+      "killedAt": 1744894729,
+      "killedBy": "37 members of  Hibernia",
+      "duration": "54s",
+      "zone": "Cave of Cruachan"
+    }
+  ],
+  "Grimeil": [
+    {
+      "killedAt": 1744895129,
+      "killedBy": "37 members of  Hibernia",
+      "duration": "47s",
+      "zone": "Cave of Cruachan"
+    }
+  ],
+  "The Phoenix": [
+    {
+      "killedAt": 1744895302,
+      "killedBy": "109 members of  Hibernia",
+      "duration": "4m 02s",
+      "zone": "City of Aerus"
+    }
+  ],
+  "Malairt": [
+    {
+      "killedAt": 1744895487,
+      "killedBy": "38 members of  Hibernia",
+      "duration": "49s",
+      "zone": "Cave of Cruachan"
+    }
+  ],
+  "Prince Asmoien": [
+    {
+      "killedAt": 1744895520,
+      "killedBy": "131 members of  Midgard",
+      "duration": "33s",
+      "zone": "Darkness Falls"
+    }
+  ],
+  "Glamaim": [
+    {
+      "killedAt": 1744895721,
+      "killedBy": "38 members of  Hibernia",
+      "duration": "50s",
+      "zone": "Cave of Cruachan"
+    }
+  ],
+  "Prince Abdin": [
+    {
+      "killedAt": 1744895795,
+      "killedBy": "127 members of  Midgard",
+      "duration": "30s",
+      "zone": "Darkness Falls"
+    }
+  ],
+  "Teugmhail": [
+    {
+      "killedAt": 1744896058,
+      "killedBy": "38 members of  Hibernia",
+      "duration": "1m 04s",
+      "zone": "Cave of Cruachan"
+    }
+  ],
+  "Prince Ba'alorien": [
+    {
+      "killedAt": 1744896176,
+      "killedBy": "122 members of  Midgard",
+      "duration": "52s",
+      "zone": "Darkness Falls"
+    }
+  ],
+  "Beliathan": [
+    {
+      "killedAt": 1744896240,
+      "killedBy": "122 members of  Midgard",
+      "duration": "33s",
+      "zone": "Darkness Falls"
+    }
+  ],
+  "Nychta": [
+    {
+      "killedAt": 1744896739,
+      "killedBy": "107 members of  Albion",
+      "duration": "09s",
+      "zone": "Summoner's Hall"
+    }
+  ],
+  "Legion": [
+    {
+      "killedAt": 1744896758,
+      "killedBy": "123 members of  Midgard",
+      "duration": "1m 18s",
+      "zone": "Darkness Falls"
+    }
+  ],
+  "High Lord Baelerdoth": [
+    {
+      "killedAt": 1744896894,
+      "killedBy": "121 members of  Midgard",
+      "duration": "36s",
+      "zone": "Darkness Falls"
     }
   ]
 }

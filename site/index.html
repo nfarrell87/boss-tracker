@@ -3,23 +3,36 @@
 
 <head>
   <meta charset="UTF-8" />
-  <title>Boss Spawn Tracker</title>
+  <title>Eden Spawn Timers</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- Tailwind CSS (via CDN) -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Custom CSS for the banner image */
+    .banner-image {
+      background-image: url('https://mmos.com/wp-content/smush-webp/2017/10/dark-age-of-camelot-16th-anniversary-news.jpg.webp');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      height: 300px; /* Adjust the height of the banner */
+    }
+  </style>
 </head>
 
-<body class="bg-gray-900 text-white p-10 font-sans">
+<body class="bg-gray-900 text-white font-sans">
+
+  <!-- Banner -->
+  <div class="banner-image w-full"></div>
 
   <!-- Header -->
-  <div class="text-center mb-10">
-    <h1 class="text-4xl font-bold text-blue-400">Boss Spawn Tracker</h1>
-    <p class="text-gray-400 mt-2">Live updates from Discord kills</p>
+  <div class="text-center mt-4 mb-10">
+    <h1 class="text-4xl font-bold text-blue-400">Eden Boss Spawn Timers</h1>
+    <p class="text-gray-400 mt-2">Live updates from Discord kill feed made by Frick</p>
   </div>
 
   <!-- Boss Cards Container -->
-  <div id="boss-container" class="flex flex-wrap justify-center gap-6"></div>
+  <div id="boss-container" class="flex flex-wrap justify-center gap-6 p-10"></div>
 
   <!-- Your script -->
   <script src="script.js"></script>

@@ -4,9 +4,10 @@ const bossCategories = {
     "Golestandt": 360,
     "Gjalpinulva": 360,
   },
-  "Mini Dragons": {
+  "NF Dragons": {
     "Kjorlakath": 30,
     "Sarnvasath": 30,
+    "Iarnvidiur": 30,
   },
   "Darkness Falls": {
     "Legion": 240,
@@ -98,6 +99,37 @@ function renderAllBosses(data) {
       const earliestIn = !isAlive && sinceKill != null ? Math.max(0, earliest - sinceKill) : null;
       const latestIn = !isAlive && sinceKill != null ? Math.max(0, latest - sinceKill) : null;
 
+      // Messages for when the boss is alive
+      const aliveMessages = [
+        "The beast liveth!",
+        "The fiend walketh once more!",
+        "He hath returned from the void!",
+        "Lo! The dark one stirreth!",
+        "The warden of this realm draweth breath anew!",
+        "The foul creature draweth breath—steel thyself!",
+        "He is risen, as foretold in grim tales!",
+        "Oi lads—he’s up an’ angry!",
+        "By my flagon, the blighter breathes again!",
+        "The bastard’s up! Gods help us all."
+      ];
+
+      // Randomly select an alive message
+      const randomAliveMessage = aliveMessages[Math.floor(Math.random() * aliveMessages.length)];
+
+      // Random messages for when earliestIn is 0 but latestIn > 0
+      const messages = [
+        "The beast stirreth! Should he yet slumber, he shall awaken in: xx.",
+        "Verily, the foe is due anon. If he yet sleepeth, his wrath cometh in: xx.",
+        "The dread lord walketh once more! If not, his return draweth nigh in: xx.",
+        "Hark! The wyrm approacheth! If not now, then surely within: xx.",
+        "Yonder beast is nigh to rise! If still entombed, reckon his return in: xx.",
+        "The accursed hath entered the window of waking. Should he tarry, expect him in: xx.",
+        "By torch and tally, the boss may be risen. If not, brace thyselves in: xx.",
+        "A fell presence is due forthwith. Else he awakens in: xx."
+      ];
+
+      const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+
       const historyRows = history.length > 0
         ? history.slice(0, 5).map((entry, i) => {
             const lowerText = entry.killedBy?.toLowerCase() || '';
@@ -145,12 +177,17 @@ function renderAllBosses(data) {
         <p class="text-sm text-gray-400 mb-2">(+/- 20% to calculate spawn window)</p>
         ${latestKill
           ? isAlive
-            ? `<p class="text-sm text-green-400 mb-4"><strong>Boss is alive!</strong></p>`
-            : `<p class="text-sm text-gray-300 mb-4">
-                <strong>Next Respawn Window:</strong><br>
-                Earliest: <span class="text-yellow-400">${formatDeltaMinutes(earliestIn)}</span><br>
-                Latest: <span class="text-red-400">${formatDeltaMinutes(latestIn)}</span>
-              </p>`
+            ? `<p class="text-sm text-green-400 mb-4"><strong>${randomAliveMessage}</strong></p>`
+            : earliestIn === 0 && latestIn > 0
+              ? `<p class="text-sm text-yellow-400 mb-4">
+                  ${randomMessage.split(":")[0]}:<br>
+                  <span class="text-lg font-bold">${formatDeltaMinutes(latestIn)}</span>
+                </p>`
+              : `<p class="text-sm text-gray-300 mb-4">
+                  <strong>Next Respawn Window:</strong><br>
+                  Earliest: <span class="text-yellow-400">${formatDeltaMinutes(earliestIn)}</span><br>
+                  Latest: <span class="text-red-400">${formatDeltaMinutes(latestIn)}</span>
+                </p>`
           : `<p class="text-sm text-gray-500 mb-4">No kills recorded yet.</p>`}
 
         <div>
