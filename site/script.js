@@ -60,6 +60,9 @@ function renderAllBosses(data) {
   const container = document.getElementById("boss-container");
   container.innerHTML = '';
 
+  // Define the current time at the start of the function
+  const now = Math.floor(Date.now() / 1000);
+
   // Create a grid container for categories
   const gridWrapper = document.createElement("div");
   gridWrapper.className = "grid grid-cols-1 gap-10";
@@ -84,15 +87,16 @@ function renderAllBosses(data) {
       const history = data[bossName] || [];
       const latestKill = history[0];
 
-      const now = Math.floor(Date.now() / 1000);
       const variance = Math.floor(base * 0.2);
       const sinceKill = latestKill ? (now - latestKill.killedAt) / 60 : null;
 
       const earliest = base - variance;
       const latest = base + variance;
 
-      const earliestIn = sinceKill != null ? Math.max(0, earliest - sinceKill) : null;
-      const latestIn = sinceKill != null ? Math.max(0, latest - sinceKill) : null;
+      // Determine if the boss is alive or calculate the respawn window
+      const isAlive = sinceKill != null && sinceKill >= latest;
+      const earliestIn = !isAlive && sinceKill != null ? Math.max(0, earliest - sinceKill) : null;
+      const latestIn = !isAlive && sinceKill != null ? Math.max(0, latest - sinceKill) : null;
 
       const historyRows = history.length > 0
         ? history.slice(0, 5).map((entry, i) => {
@@ -111,12 +115,21 @@ function renderAllBosses(data) {
               realmEmoji = '<img src="https://static.wikia.nocookie.net/camelotherald/images/7/7c/Hibernia_logo.png" alt="Hibernia" class="inline h-4 w-4 mr-1 align-middle" />';
             }
 
+            // Calculate how long ago the boss was killed
+            const killedAt = entry.killedAt || 0;
+            const timeAgo = killedAt
+              ? Math.floor((now - killedAt) / 60) // Time in minutes
+              : null;
+            const timeAgoText = timeAgo != null
+              ? `${Math.floor(timeAgo / 60)}h ${timeAgo % 60}m ago`
+              : 'Unknown';
+
             return `
               <tr class="${rowClass} border-b border-gray-700">
                 <td class="py-1 px-2 text-sm text-gray-100">${i + 1}</td>
-                <td class="py-1 px-2 text-sm text-white">${formatTimeFromNow(entry.killedAt)}</td>
+                <td class="py-1 px-2 text-sm text-white">${formatTimeFromNow(killedAt)}</td>
                 <td class="py-1 px-2 text-sm text-white">${realmEmoji}${entry.killedBy || 'Unknown'}</td>
-                <td class="py-1 px-2 text-sm text-white">${entry.duration || 'Unknown'}</td>
+                <td class="py-1 px-2 text-sm text-white">${timeAgoText}</td>
               </tr>
             `;
           }).join('')
@@ -128,12 +141,12 @@ function renderAllBosses(data) {
 
       bossCard.innerHTML = `
         <h3 class="text-xl font-semibold mb-2 text-blue-300">${bossName}</h3>
+        <p class="text-sm text-gray-400">Base Respawn Time: ${formatDeltaMinutes(base)}</p>
+        <p class="text-sm text-gray-400 mb-2">(+/- 20% to calculate spawn window)</p>
         ${latestKill
-          ? `<p class="text-sm text-gray-300 mb-2">
-                <strong>Last Kill:</strong> ${formatTimeFromNow(latestKill.killedAt)}<br>
-                <strong>Zone:</strong> ${latestKill.zone || "Unknown"}
-              </p>
-              <p class="text-sm text-gray-300 mb-4">
+          ? isAlive
+            ? `<p class="text-sm text-green-400 mb-4"><strong>Boss is alive!</strong></p>`
+            : `<p class="text-sm text-gray-300 mb-4">
                 <strong>Next Respawn Window:</strong><br>
                 Earliest: <span class="text-yellow-400">${formatDeltaMinutes(earliestIn)}</span><br>
                 Latest: <span class="text-red-400">${formatDeltaMinutes(latestIn)}</span>
@@ -183,12 +196,20 @@ function renderAllBosses(data) {
   Object.entries(data).forEach(([bossName, history]) => {
     if (!Object.values(bossCategories).some(category => bossName in category)) {
       history.forEach((entry) => {
+        const killedAt = entry.killedAt || 0;
+        const timeAgo = killedAt
+          ? Math.floor((now - killedAt) / 60) // Time in minutes
+          : null;
+        const timeAgoText = timeAgo != null
+          ? `${Math.floor(timeAgo / 60)}h ${timeAgo % 60}m ago`
+          : 'Unknown';
+
         otherBossesRows += `
           <tr class="border-b border-gray-700">
             <td class="py-1 px-2 text-sm text-gray-300">${bossName}</td>
-            <td class="py-1 px-2 text-sm text-white">${formatTimeFromNow(entry.killedAt)}</td>
+            <td class="py-1 px-2 text-sm text-white">${formatTimeFromNow(killedAt)}</td>
             <td class="py-1 px-2 text-sm text-white">${entry.killedBy || 'Unknown'}</td>
-            <td class="py-1 px-2 text-sm text-white">${entry.duration || 'Unknown'}</td>
+            <td class="py-1 px-2 text-sm text-white">${timeAgoText}</td>
           </tr>
         `;
       });

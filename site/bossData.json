@@ -9,6 +9,24 @@
   ],
   "Ancient Hermit": [
     {
+      "killedAt": 1744892807,
+      "killedBy": "2 members of  Hibernia",
+      "duration": "1m 06s",
+      "zone": "Cathal Valley"
+    },
+    {
+      "killedAt": 1744892069,
+      "killedBy": "1 members of  Hibernia",
+      "duration": "37s",
+      "zone": "Cathal Valley"
+    },
+    {
+      "killedAt": 1744891334,
+      "killedBy": "2 members of  Hibernia",
+      "duration": "1m 05s",
+      "zone": "Cathal Valley"
+    },
+    {
       "killedAt": 1744888337,
       "killedBy": "5 members of  Midgard",
       "duration": "14s",
@@ -18,24 +36,6 @@
       "killedAt": 1744887671,
       "killedBy": "1 members of  Albion",
       "duration": "33s",
-      "zone": "Cathal Valley"
-    },
-    {
-      "killedAt": 1744886920,
-      "killedBy": "3 members of  Hibernia",
-      "duration": "18s",
-      "zone": "Cathal Valley"
-    },
-    {
-      "killedAt": 1744886076,
-      "killedBy": "1 members of  Midgard",
-      "duration": "1m 41s",
-      "zone": "Cathal Valley"
-    },
-    {
-      "killedAt": 1744885038,
-      "killedBy": "4 members of Albion",
-      "duration": "23s",
       "zone": "Cathal Valley"
     }
   ],
@@ -110,6 +110,12 @@
     }
   ],
   "Danos": [
+    {
+      "killedAt": 1744892508,
+      "killedBy": "4 members of  Albion",
+      "duration": "7m 04s",
+      "zone": "Green Glades"
+    },
     {
       "killedAt": 1744890281,
       "killedBy": "8 members of  Hibernia",
@@ -209,6 +215,12 @@
   ],
   "Zahur": [
     {
+      "killedAt": 1744892547,
+      "killedBy": "2 members of  Midgard",
+      "duration": "8m 14s",
+      "zone": "Oceanus Boreal"
+    },
+    {
       "killedAt": 1744887921,
       "killedBy": "4 members of  Hibernia",
       "duration": "7m 44s",
@@ -245,6 +257,62 @@
       "killedBy": "8 members of  Hibernia",
       "duration": "1m 35s",
       "zone": "Typhon's Reach"
+    }
+  ],
+  "Battler": [
+    {
+      "killedAt": 1744891133,
+      "killedBy": "4 members of  Albion",
+      "duration": "8m 18s",
+      "zone": "Ashen Isles"
+    }
+  ],
+  "Gjalpinulva": [
+    {
+      "killedAt": 1744891802,
+      "killedBy": "178 members of  Midgard",
+      "duration": "51s",
+      "zone": "Malmohus"
+    }
+  ],
+  "Ghorvensath": [
+    {
+      "killedAt": 1744891924,
+      "killedBy": "18 members of  Hibernia",
+      "duration": "6m 55s",
+      "zone": "Sheeroe Hills"
+    }
+  ],
+  "Apocalypse": [
+    {
+      "killedAt": 1744892255,
+      "killedBy": "99 members of  Albion",
+      "duration": "1m 33s",
+      "zone": "Caer Sidi"
+    }
+  ],
+  "Nelos": [
+    {
+      "killedAt": 1744893006,
+      "killedBy": "116 members of  Hibernia",
+      "duration": "31s",
+      "zone": "City of Aerus"
+    }
+  ],
+  "Iarnvidiur": [
+    {
+      "killedAt": 1744893132,
+      "killedBy": "115 members of  Midgard",
+      "duration": "1m 01s",
+      "zone": "Iarnvidiur's Lair"
+    }
+  ],
+  "Lachlen": [
+    {
+      "killedAt": 1744893195,
+      "killedBy": "116 members of  Hibernia",
+      "duration": "23s",
+      "zone": "City of Aerus"
     }
   ]
 }
