@@ -355,6 +355,12 @@
   ],
   "Iarnvidiur": [
     {
+      "killedAt": 1744927314,
+      "killedBy": "111 members of  Midgard",
+      "duration": "1m 11s",
+      "zone": "Iarnvidiur's Lair"
+    },
+    {
       "killedAt": 1744893132,
       "killedBy": "115 members of  Midgard",
       "duration": "1m 01s",
@@ -535,6 +541,14 @@
       "killedBy": "121 members of  Midgard",
       "duration": "36s",
       "zone": "Darkness Falls"
+    }
+  ],
+  "Green Knight": [
+    {
+      "killedAt": 1744927212,
+      "killedBy": "59 members of  Albion",
+      "duration": "1m 30s",
+      "zone": "Forest Sauvage"
     }
   ]
 }
