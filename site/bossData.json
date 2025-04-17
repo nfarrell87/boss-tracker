@@ -1,0 +1,250 @@
+{
+  "Tower of Graoch": [
+    {
+      "killedAt": 1744884285,
+      "killedBy": "Captured by the forces of Hibernia",
+      "duration": "unknown",
+      "zone": "unknown"
+    }
+  ],
+  "Ancient Hermit": [
+    {
+      "killedAt": 1744888337,
+      "killedBy": "5 members of  Midgard",
+      "duration": "14s",
+      "zone": "Cathal Valley"
+    },
+    {
+      "killedAt": 1744887671,
+      "killedBy": "1 members of  Albion",
+      "duration": "33s",
+      "zone": "Cathal Valley"
+    },
+    {
+      "killedAt": 1744886920,
+      "killedBy": "3 members of  Hibernia",
+      "duration": "18s",
+      "zone": "Cathal Valley"
+    },
+    {
+      "killedAt": 1744886076,
+      "killedBy": "1 members of  Midgard",
+      "duration": "1m 41s",
+      "zone": "Cathal Valley"
+    },
+    {
+      "killedAt": 1744885038,
+      "killedBy": "4 members of Albion",
+      "duration": "23s",
+      "zone": "Cathal Valley"
+    }
+  ],
+  "Golestandt": [
+    {
+      "killedAt": 1744884422,
+      "killedBy": "184 members of Albion",
+      "duration": "38s",
+      "zone": "Dartmoor"
+    }
+  ],
+  "Olmagion": [
+    {
+      "killedAt": 1744888256,
+      "killedBy": "8 members of  Hibernia",
+      "duration": "1m 17s",
+      "zone": "Oceanus Notos"
+    },
+    {
+      "killedAt": 1744884426,
+      "killedBy": "8 members of Hibernia",
+      "duration": "1m 34s",
+      "zone": "Oceanus Notos"
+    }
+  ],
+  "Nosdoden": [
+    {
+      "killedAt": 1744884684,
+      "killedBy": "58 members of Midgard",
+      "duration": "5m 60s",
+      "zone": "Trollheim"
+    }
+  ],
+  "Dun Scathaig Watchtower": [
+    {
+      "killedAt": 1744884705,
+      "killedBy": "Captured by the forces of Hibernia",
+      "duration": "unknown",
+      "zone": "unknown"
+    }
+  ],
+  "Evern": [
+    {
+      "killedAt": 1744884831,
+      "killedBy": "54 members of Hibernia",
+      "duration": "22s",
+      "zone": "Breifine"
+    }
+  ],
+  "Dun Ailinne Watchtower": [
+    {
+      "killedAt": 1744885160,
+      "killedBy": "Captured by the forces of Hibernia",
+      "duration": "unknown",
+      "zone": "unknown"
+    }
+  ],
+  "Cuuldurach the Glimmer King": [
+    {
+      "killedAt": 1744885414,
+      "killedBy": "125 members of Hibernia",
+      "duration": "1m 21s",
+      "zone": "Sheeroe Hills"
+    }
+  ],
+  "Dun nGed Outpost": [
+    {
+      "killedAt": 1744885465,
+      "killedBy": "Captured by the forces of Hibernia",
+      "duration": "unknown",
+      "zone": "unknown"
+    }
+  ],
+  "Danos": [
+    {
+      "killedAt": 1744890281,
+      "killedBy": "8 members of  Hibernia",
+      "duration": "3m 02s",
+      "zone": "Green Glades"
+    },
+    {
+      "killedAt": 1744887694,
+      "killedBy": "4 members of  Albion",
+      "duration": "8m 30s",
+      "zone": "Green Glades"
+    },
+    {
+      "killedAt": 1744885689,
+      "killedBy": "7 members of Hibernia",
+      "duration": "3m 36s",
+      "zone": "Green Glades"
+    }
+  ],
+  "Sarnvasath": [
+    {
+      "killedAt": 1744887942,
+      "killedBy": "34 members of  Midgard",
+      "duration": "44s",
+      "zone": "Emain Macha"
+    },
+    {
+      "killedAt": 1744885786,
+      "killedBy": "27 members of Hibernia",
+      "duration": "3m 38s",
+      "zone": "Emain Macha"
+    }
+  ],
+  "Kjorlakath": [
+    {
+      "killedAt": 1744886022,
+      "killedBy": "8 members of  Albion",
+      "duration": "1m 60s",
+      "zone": "Odin's Gate"
+    }
+  ],
+  "Glacier Giant": [
+    {
+      "killedAt": 1744886170,
+      "killedBy": "8 members of  Albion",
+      "duration": "1m 45s",
+      "zone": "Odin's Gate"
+    }
+  ],
+  "Dura'ek the Empowered": [
+    {
+      "killedAt": 1744887290,
+      "killedBy": "48 members of  Albion",
+      "duration": "35s",
+      "zone": "Avalon City"
+    }
+  ],
+  "Aidon the Archwizard": [
+    {
+      "killedAt": 1744887428,
+      "killedBy": "69 members of  Midgard",
+      "duration": "28s",
+      "zone": "Summoner's Hall"
+    }
+  ],
+  "Summoner Roesia": [
+    {
+      "killedAt": 1744887568,
+      "killedBy": "71 members of  Midgard",
+      "duration": "17s",
+      "zone": "Summoner's Hall"
+    }
+  ],
+  "Summoner Cunovinda": [
+    {
+      "killedAt": 1744887692,
+      "killedBy": "71 members of  Midgard",
+      "duration": "32s",
+      "zone": "Summoner's Hall"
+    }
+  ],
+  "Dra'argus the Mighty": [
+    {
+      "killedAt": 1744887743,
+      "killedBy": "48 members of  Albion",
+      "duration": "33s",
+      "zone": "Avalon City"
+    }
+  ],
+  "Summoner Lossren": [
+    {
+      "killedAt": 1744887863,
+      "killedBy": "70 members of  Midgard",
+      "duration": "23s",
+      "zone": "Summoner's Hall"
+    }
+  ],
+  "Zahur": [
+    {
+      "killedAt": 1744887921,
+      "killedBy": "4 members of  Hibernia",
+      "duration": "7m 44s",
+      "zone": "Oceanus Boreal"
+    }
+  ],
+  "Eramai": [
+    {
+      "killedAt": 1744888582,
+      "killedBy": "8 members of  Hibernia",
+      "duration": "1m 34s",
+      "zone": "Green Glades"
+    }
+  ],
+  "Hermes": [
+    {
+      "killedAt": 1744888780,
+      "killedBy": "2 members of  Hibernia",
+      "duration": "16m 06s",
+      "zone": "Oceanus Notos"
+    }
+  ],
+  "Grand Summoner Govannon": [
+    {
+      "killedAt": 1744889144,
+      "killedBy": "68 members of  Midgard",
+      "duration": "3m 10s",
+      "zone": "Summoner's Hall"
+    }
+  ],
+  "High Priest Akil": [
+    {
+      "killedAt": 1744889595,
+      "killedBy": "8 members of  Hibernia",
+      "duration": "1m 35s",
+      "zone": "Typhon's Reach"
+    }
+  ]
+}

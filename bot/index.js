@@ -1,6 +1,10 @@
 require('dotenv').config();
 const { Client, GatewayIntentBits } = require('discord.js');
+const fs = require('fs');
+const path = require('path');
+const express = require('express');
 
+// ===== DISCORD BOT =====
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -14,31 +18,72 @@ client.once('ready', () => {
 });
 
 client.on('messageCreate', (message) => {
-  if (message.embeds.length > 0) {
-    const embed = message.embeds[0];
+  const stripEmojis = str => str.replace(/<:[^>]+>/g, '').trim();
+  
+  if (message.embeds.length === 0) return;
 
-    const [boss, zone] = embed.title?.split('»').map(str => str.trim()) || [];
-    const whenField = embed.fields.find(field => field.name === 'When');
-    const durationField = embed.fields.find(field => field.name === 'Duration');
-    const killedBy = embed.description?.replace(/killed by\s+/i, '') || '';
+  const embed = message.embeds[0];
+  const [rawBoss, rawZone] = embed.title?.split('»').map(str => str.trim()) || [];
+  const boss = stripEmojis(rawBoss || '');
+  const zone = stripEmojis(rawZone || '');
+  const whenField = embed.fields.find(field => field.name === 'When');
+  const durationField = embed.fields.find(field => field.name === 'Duration');
+  const rawKilledBy = embed.description?.replace(/killed by\s+/i, '') || '';
+  const killedBy = stripEmojis(rawKilledBy);
+  const timestampMatch = whenField?.value?.match(/<t:(\d+):[a-zA-Z]>/);
+  const killedAt = timestampMatch ? parseInt(timestampMatch[1]) : null;
 
-    const timestampMatch = whenField?.value?.match(/<t:(\d+):[a-zA-Z]>/);
-    const killedAt = timestampMatch ? parseInt(timestampMatch[1]) : null;
+  if (!boss || !killedAt) return;
 
-    const data = {
-      boss,
-      zone,
-      killedAt,
-      killedBy,
-      duration: durationField?.value || 'unknown',
-    };
+  const newKill = {
+    killedAt,
+    killedBy,
+    duration: durationField?.value || 'unknown',
+    zone: zone || 'unknown'
+  };
 
-    // Save it to site folder (adjust path if needed)
-    const dataPath = path.join(__dirname, '../site/bossData.json');
-    fs.writeFileSync(dataPath, JSON.stringify(data, null, 2));
+  const dataPath = path.join(__dirname, '../site/bossData.json');
+  let allData = {};
 
-    console.log(`✅ Saved kill data for ${boss}`);
+  try {
+    const raw = fs.readFileSync(dataPath, 'utf-8');
+    allData = JSON.parse(raw);
+  } catch (e) {
+    console.log('Starting new bossData.json');
+  }
+
+  if (!Array.isArray(allData[boss])) {
+    allData[boss] = [];
+  }
+
+  // Don't log duplicates (within 10 minutes)
+  const alreadyLogged = allData[boss].some(entry =>
+    Math.abs(entry.killedAt - killedAt) < 600
+  );
+
+  if (!alreadyLogged) {
+    allData[boss].unshift(newKill); // add to front
+    allData[boss] = allData[boss].slice(0, 5); // keep latest 5
+    fs.writeFileSync(dataPath, JSON.stringify(allData, null, 2));
+    console.log(`✅ Logged kill for ${boss}`);
   }
 });
 
 client.login(process.env.DISCORD_TOKEN);
+
+// ===== EXPRESS SERVER =====
+const app = express();
+const PORT = 3000;
+
+// Serve static files from /site
+app.use(express.static(path.join(__dirname, '../site')));
+
+// Serve bossData.json through an API endpoint
+app.get('/data', (req, res) => {
+  const dataPath = path.join(__dirname, '../site/bossData.json');
+  res.sendFile(dataPath);
+});
+
+app.listen(PORT, () => {
+  console.log(`🌐 Website is running at http://localhost:${PORT}`);
+});
