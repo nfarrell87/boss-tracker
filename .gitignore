@@ -1,0 +1,17 @@
+# Node.js stuff
+node_modules/
+.env
+.DS_Store
+npm-debug.log*
+
+# Mac/Windows files
+Thumbs.db
+
+# VS Code
+.vscode/
+
+# Log files
+*.log
+
+# System files
+*.swp
