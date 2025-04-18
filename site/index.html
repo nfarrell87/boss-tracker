@@ -15,6 +15,9 @@
   <title>Eden Spawn Timers</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+  <!-- Favicon -->
+  <link rel="icon" href="https://clipart-library.com/8300/dragon-head-drawing.png" type="image/png" />
+
   <!-- Tailwind CSS (via CDN) -->
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
@@ -32,18 +35,37 @@
 
 <body class="bg-gray-900 text-white font-sans">
 
-  <!-- Banner -->
-  <div class="banner-image w-full"></div>
+  <!-- Header and Filters Section -->
+  <div class="bg-gray-800">
+    <!-- Header -->
+    <div class="flex justify-center items-center pt-4 gap-4">
+      <!-- Left Image -->
+      <img src="https://cdn-icons-png.freepik.com/512/477/477110.png" alt="Left Icon" class="h-16 w-auto" />
 
-  <!-- Header -->
-  <div class="text-center mt-4">
-    <h1 class="text-4xl font-bold text-blue-400">Eden Boss Spawn Timers</h1>
-    <p class="text-gray-400 mt-2">Live updates from Discord kill feed made by Frick</p>
-    <p id="update-info" class="text-gray-500 mt-4"></p>
+      <!-- Title and Subtitle -->
+      <div class="text-center">
+        <h1 class="text-4xl font-bold text-blue-400">Eden DAoC Boss Spawn Timers</h1>
+        <p class="text-gray-400 mt-2">Live updates from Discord kill feed made by Frick</p>
+      </div>
+
+      <!-- Right Image -->
+      <img src="https://clipart-library.com/8300/dragon-head-drawing.png" alt="Right Icon" class="h-16 w-auto" />
+    </div>
+
+    <!-- Category Filters -->
+    <div id="category-filters"
+      class="flex flex-wrap justify-center gap-4 p-4 bg-gray-800 text-white rounded-lg shadow">
+      <!-- Checkboxes will be dynamically added here -->
+    </div>
   </div>
 
-  <!-- Boss Cards Container -->
-  <div id="boss-container" class="flex flex-wrap justify-center gap-6 p-10"></div>
+  <!-- Update Info -->
+  <div id="update-info" class="text-center text-gray-400"></div>
+
+  <!-- Boss Cards Section -->
+  <div id="boss-container" class="flex flex-wrap justify-center gap-6 p-10 bg-gray-900">
+    <!-- Boss cards will be dynamically added here -->
+  </div>
 
   <!-- Your script -->
   <script src="script.js"></script>

@@ -62,9 +62,9 @@ client.on('messageCreate', (message) => {
   );
 
   if (!alreadyLogged) {
-    allData[boss].unshift(newKill); // add to front
-    allData[boss] = allData[boss].slice(0, 5); // keep latest 5
-    fs.writeFileSync(dataPath, JSON.stringify(allData, null, 2));
+    allData[boss].unshift(newKill); // Add the new kill to the front
+    allData[boss] = allData[boss].slice(0, 5); // Keep only the latest 5 entries
+    fs.writeFileSync(dataPath, JSON.stringify(allData, null, 2)); // Save the updated data
     console.log(`✅ Logged kill for ${boss}`);
   }
 });

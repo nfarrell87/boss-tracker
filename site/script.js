@@ -4,11 +4,6 @@ const bossCategories = {
     "Golestandt": 360,
     "Gjalpinulva": 360,
   },
-  "NF Dragons": {
-    "Kjorlakath": 30,
-    "Sarnvasath": 30,
-    "Iarnvidiur": 30,
-  },
   "Darkness Falls": {
     "Legion": 240,
     "Beliathan": 240,
@@ -27,12 +22,63 @@ const bossCategories = {
     "Summoner Lossren": 120,
     "Aidon the Archwizard": 120,
   },
+  "NF Dragons": {
+    "Kjorlakath": 30,
+    "Sarnvasath": 30,
+    "Iarnvidiur": 30,
+  },
   "SI Epic Dungeon": {
     "Apocalypse": 360,
     "Olcasgean": 360,
     "King Tuscar": 360,
   },
 };
+
+const categoryVisibility = JSON.parse(localStorage.getItem('categoryVisibility')) || {};
+
+// Ensure all categories have a default visibility state
+Object.keys(bossCategories).forEach((category) => {
+  if (categoryVisibility[category] === undefined) {
+    categoryVisibility[category] = true; // Default to visible
+  }
+});
+
+// Save visibility state to localStorage
+function saveCategoryVisibility() {
+  localStorage.setItem('categoryVisibility', JSON.stringify(categoryVisibility));
+}
+
+// Render checkboxes for category filters
+function renderCategoryFilters() {
+  const filtersContainer = document.getElementById('category-filters');
+  filtersContainer.innerHTML = ''; // Clear existing filters
+
+  Object.keys(bossCategories).forEach((category) => {
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.id = `filter-${category}`;
+    checkbox.checked = categoryVisibility[category];
+    checkbox.className = 'form-checkbox h-5 w-5 text-blue-500 rounded focus:ring focus:ring-blue-300';
+
+    checkbox.addEventListener('change', (e) => {
+      categoryVisibility[category] = e.target.checked;
+      saveCategoryVisibility();
+      renderAllBosses(currentData); // Re-render bosses
+    });
+
+    const label = document.createElement('label');
+    label.htmlFor = `filter-${category}`;
+    label.className = 'text-sm text-gray-300 ml-2';
+    label.textContent = category;
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'flex items-center gap-2';
+    wrapper.appendChild(checkbox);
+    wrapper.appendChild(label);
+
+    filtersContainer.appendChild(wrapper);
+  });
+}
 
 function formatTimeFromNow(timestamp) {
   if (!timestamp) return "Unknown";
@@ -67,8 +113,8 @@ async function loadBossData() {
 
     const updateInfo = document.getElementById("update-info");
     updateInfo.innerHTML = `
-      <span>Last Updated: <strong>${now.toLocaleTimeString()}</strong></span><br>
-      <span>Next Update: <strong id="countdown">60</strong> seconds</span>
+      <span>Last Updated: <strong>${now.toLocaleTimeString()}  --</strong></span>
+      <span>  Next Update: <strong id="countdown">60</strong> seconds</span>
     `;
 
     // Start the countdown
@@ -117,6 +163,8 @@ function renderAllBosses(data) {
 
   // Loop through each category
   Object.entries(bossCategories).forEach(([categoryName, bosses]) => {
+    if (!categoryVisibility[categoryName]) return; // Skip rendering if category is hidden
+
     // Create a card for the category
     const categoryCard = document.createElement("div");
     categoryCard.className = "bg-gray-800 text-white rounded-xl shadow-lg p-6";
@@ -146,64 +194,33 @@ function renderAllBosses(data) {
       const earliestIn = !isAlive && sinceKill != null ? Math.max(0, earliest - sinceKill) : null;
       const latestIn = !isAlive && sinceKill != null ? Math.max(0, latest - sinceKill) : null;
 
-      // Messages for when the boss is alive
-      const aliveMessages = [
-        "The beast liveth!",
-        "The fiend walketh once more!",
-        "He hath returned from the void!",
-        "Lo! The dark one stirreth!",
-        "The warden of this realm draweth breath anew!",
-        "The foul creature draweth breath—steel thyself!",
-        "He is risen, as foretold in grim tales!",
-        "Oi lads—he’s up an’ angry!",
-        "By my flagon, the blighter breathes again!",
-        "The bastard’s up! Gods help us all."
-      ];
-
-      // Randomly select an alive message
-      const randomAliveMessage = aliveMessages[Math.floor(Math.random() * aliveMessages.length)];
-
-      // Random messages for when earliestIn is 0 but latestIn > 0
-      const messages = [
-        "The beast stirreth! Should he yet slumber, he shall awaken in: xx.",
-        "Verily, the foe is due anon. If he yet sleepeth, his wrath cometh in: xx.",
-        "The dread lord walketh once more! If not, his return draweth nigh in: xx.",
-        "Hark! The wyrm approacheth! If not now, then surely within: xx.",
-        "Yonder beast is nigh to rise! If still entombed, reckon his return in: xx.",
-        "The accursed hath entered the window of waking. Should he tarry, expect him in: xx.",
-        "By torch and tally, the boss may be risen. If not, brace thyselves in: xx.",
-        "A fell presence is due forthwith. Else he awakens in: xx."
-      ];
-
-      const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-
       const historyRows = history.length > 0
         ? history.slice(0, 5).map((entry, i) => {
-            const lowerText = entry.killedBy?.toLowerCase() || '';
-            let rowClass = 'bg-transparent';
-            let realmEmoji = '';
+          const lowerText = entry.killedBy?.toLowerCase() || '';
+          let rowClass = 'bg-transparent';
+          let realmEmoji = '';
 
-            if (lowerText.includes('albion')) {
-              rowClass = 'bg-[#f96669]/30';
-              realmEmoji = '<img src="https://static.wikia.nocookie.net/camelotherald/images/b/ba/Albion_logo.png" alt="Albion" class="inline h-4 w-4 mr-1 align-middle" />';
-            } else if (lowerText.includes('midgard')) {
-              rowClass = 'bg-[#46a4fe]/30';
-              realmEmoji = '<img src="https://static.wikia.nocookie.net/camelotherald/images/2/28/Midgard_logo.png" alt="Midgard" class="inline h-4 w-4 mr-1 align-middle" />';
-            } else if (lowerText.includes('hibernia')) {
-              rowClass = 'bg-[#44d56c]/30';
-              realmEmoji = '<img src="https://static.wikia.nocookie.net/camelotherald/images/7/7c/Hibernia_logo.png" alt="Hibernia" class="inline h-4 w-4 mr-1 align-middle" />';
-            }
+          if (lowerText.includes('albion')) {
+            rowClass = 'bg-[#f96669]/30';
+            realmEmoji = '<img src="https://static.wikia.nocookie.net/camelotherald/images/b/ba/Albion_logo.png" alt="Albion" class="inline h-4 w-4 mr-1 align-middle" />';
+          } else if (lowerText.includes('midgard')) {
+            rowClass = 'bg-[#46a4fe]/30';
+            realmEmoji = '<img src="https://static.wikia.nocookie.net/camelotherald/images/2/28/Midgard_logo.png" alt="Midgard" class="inline h-4 w-4 mr-1 align-middle" />';
+          } else if (lowerText.includes('hibernia')) {
+            rowClass = 'bg-[#44d56c]/30';
+            realmEmoji = '<img src="https://static.wikia.nocookie.net/camelotherald/images/7/7c/Hibernia_logo.png" alt="Hibernia" class="inline h-4 w-4 mr-1 align-middle" />';
+          }
 
-            // Calculate how long ago the boss was killed
-            const killedAt = entry.killedAt || 0;
-            const timeAgo = killedAt
-              ? Math.floor((now - killedAt) / 60) // Time in minutes
-              : null;
-            const timeAgoText = timeAgo != null
-              ? `${Math.floor(timeAgo / 60)}h ${timeAgo % 60}m ago`
-              : 'Unknown';
+          // Calculate how long ago the boss was killed
+          const killedAt = entry.killedAt || 0;
+          const timeAgo = killedAt
+            ? Math.floor((now - killedAt) / 60) // Time in minutes
+            : null;
+          const timeAgoText = timeAgo != null
+            ? `${Math.floor(timeAgo / 60)}h ${timeAgo % 60}m ago`
+            : 'Unknown';
 
-            return `
+          return `
               <tr class="${rowClass} border-b border-gray-700">
                 <td class="py-1 px-2 text-sm text-gray-100">${i + 1}</td>
                 <td class="py-1 px-2 text-sm text-white">${formatTimeFromNow(killedAt)}</td>
@@ -211,7 +228,7 @@ function renderAllBosses(data) {
                 <td class="py-1 px-2 text-sm text-white">${timeAgoText}</td>
               </tr>
             `;
-          }).join('')
+        }).join('')
         : `<tr><td colspan="4" class="text-sm text-center text-gray-500 py-2">No history available</td></tr>`;
 
       // Create a card for the boss
@@ -219,16 +236,24 @@ function renderAllBosses(data) {
       bossCard.className = "bg-gray-700 text-white rounded-lg shadow p-4";
 
       bossCard.innerHTML = `
-        <h3 class="text-xl font-semibold mb-2 text-blue-300">${bossName}</h3>
-        <p class="text-sm text-gray-400">Base Respawn Time: ${formatDeltaMinutes(base)}</p>
-        <p class="text-sm text-gray-400 mb-2">(+/- 20% to calculate spawn window)</p>
+        <div class="flex justify-between items-center mb-2">
+          <h3 class="text-xl font-semibold text-orange-200 flex-grow text-left">${bossName}</h3>
+          <p class="text-xs text-gray-400 text-right flex-shrink-0 w-1/3">
+            Base Respawn Time: ${formatDeltaMinutes(base)}<br />
+            (+/- 20%)
+          </p>
+        </div>
         ${latestKill
           ? isAlive
-            ? `<p class="text-sm text-green-400 mb-4"><strong>${randomAliveMessage}</strong></p>`
+            ? `<p class="text-sm text-gray-300 mb-4">
+                <strong>Next Respawn Window:</strong><br>
+                <span class="text-sm text-green-400 mb-4"><strong>Boss is alive!</strong></span>
+              </p>`
             : earliestIn === 0 && latestIn > 0
               ? `<p class="text-sm text-yellow-400 mb-4">
-                  ${randomMessage.split(":")[0]}:<br>
-                  <span class="text-lg font-bold">${formatDeltaMinutes(latestIn)}</span>
+                  <strong>Next Respawn Window:</strong><br>
+                  <strong>Earliest:</strong> Boss in spawn window now!<br>
+                  <strong>Max Spawn Time:</strong> ${formatDeltaMinutes(latestIn)}
                 </p>`
               : `<p class="text-sm text-gray-300 mb-4">
                   <strong>Next Respawn Window:</strong><br>
@@ -303,7 +328,7 @@ function renderAllBosses(data) {
 
   // Generate rows for the sorted data
   otherBossesData.forEach(({ bossName, killedAt, killedBy, timeAgo }, index) => {
-    if (index < 20) { // Only display the top 20
+    if (index < 30) { // Only display the top 30
       const timeAgoText = timeAgo != null
         ? `${Math.floor(timeAgo / 60)}h ${timeAgo % 60}m ago`
         : 'Unknown';
@@ -341,3 +366,4 @@ function renderAllBosses(data) {
 // Start the data loading and countdown process
 loadBossData();
 setInterval(loadBossData, 60000); // Refresh every 60 seconds
+renderCategoryFilters(); // Render category filters
