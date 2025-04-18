@@ -247,18 +247,18 @@ function renderAllBosses(data) {
           ? isAlive
             ? `<p class="text-sm text-gray-300 mb-4">
                 <strong>Next Respawn Window:</strong><br>
-                <span class="text-sm text-green-400 mb-4"><strong>Boss is alive!</strong></span>
+                <span class="text-sm text-green-400 mb-4"><strong>Boss is up now!</strong></span>
               </p>`
             : earliestIn === 0 && latestIn > 0
-              ? `<p class="text-sm text-yellow-400 mb-4">
+              ? `<p class="text-sm text-gray-300 mb-4">
                   <strong>Next Respawn Window:</strong><br>
-                  <strong>Earliest:</strong> Boss in spawn window now!<br>
-                  <strong>Max Spawn Time:</strong> ${formatDeltaMinutes(latestIn)}
+                  Earliest Spawn: <span class="text-yellow-400">Boss in spawn window now!</span><br>
+                  Latest Spawn: <span class="text-red-400">${formatDeltaMinutes(latestIn)}</span>
                 </p>`
               : `<p class="text-sm text-gray-300 mb-4">
                   <strong>Next Respawn Window:</strong><br>
-                  Earliest: <span class="text-yellow-400">${formatDeltaMinutes(earliestIn)}</span><br>
-                  Latest: <span class="text-red-400">${formatDeltaMinutes(latestIn)}</span>
+                  Earliest Spawn: <span class="text-yellow-400">${formatDeltaMinutes(earliestIn)}</span><br>
+                  Latest Spawn: <span class="text-red-400">${formatDeltaMinutes(latestIn)}</span>
                 </p>`
           : `<p class="text-sm text-gray-500 mb-4">No kills recorded yet.</p>`}
 
