@@ -46,15 +46,62 @@ function formatDeltaMinutes(minutes) {
   return `${h}h ${m}m`;
 }
 
+let nextUpdateTime = null; // Store the next update time globally
+let countdownInterval = null; // Store the interval ID globally
+let currentData = {}; // Store the current data globally to compare with new data
+
 async function loadBossData() {
   try {
     const res = await fetch('/data');
-    const data = await res.json();
-    renderAllBosses(data);
+    const newData = await res.json();
+
+    // Compare new data with current data
+    if (JSON.stringify(newData) !== JSON.stringify(currentData)) {
+      currentData = newData; // Update the current data
+      renderAllBosses(newData); // Re-render the bosses
+    }
+
+    // Update the "Last Updated" and "Next Update" info
+    const now = new Date();
+    nextUpdateTime = new Date(now.getTime() + 60000); // Add 1 minute (60,000 ms)
+
+    const updateInfo = document.getElementById("update-info");
+    updateInfo.innerHTML = `
+      <span>Last Updated: <strong>${now.toLocaleTimeString()}</strong></span><br>
+      <span>Next Update: <strong id="countdown">60</strong> seconds</span>
+    `;
+
+    // Start the countdown
+    startCountdown();
   } catch (e) {
     console.error("Failed to load boss data:", e);
     document.getElementById("boss-container").innerHTML = `<p class="text-red-500 text-center">Error loading boss data</p>`;
   }
+}
+
+function startCountdown() {
+  const countdownElement = document.getElementById("countdown");
+
+  if (!countdownElement) return; // Exit if the countdown element is not found
+
+  // Clear any existing interval to avoid overlapping intervals
+  if (countdownInterval) {
+    clearInterval(countdownInterval);
+  }
+
+  // Start a new interval
+  countdownInterval = setInterval(() => {
+    if (!nextUpdateTime) return; // Exit if nextUpdateTime is not set
+
+    const now = new Date();
+    const timeLeft = Math.max(0, Math.floor((nextUpdateTime - now) / 1000)); // Calculate seconds left
+
+    countdownElement.textContent = timeLeft;
+
+    if (timeLeft <= 0) {
+      clearInterval(countdownInterval); // Stop the countdown when it reaches 0
+    }
+  }, 1000); // Update every second
 }
 
 function renderAllBosses(data) {
@@ -230,6 +277,9 @@ function renderAllBosses(data) {
   otherBossesTable.className = "overflow-x-auto";
 
   let otherBossesRows = '';
+  const otherBossesData = [];
+
+  // Collect all "Other Bosses" data
   Object.entries(data).forEach(([bossName, history]) => {
     if (!Object.values(bossCategories).some(category => bossName in category)) {
       history.forEach((entry) => {
@@ -237,19 +287,35 @@ function renderAllBosses(data) {
         const timeAgo = killedAt
           ? Math.floor((now - killedAt) / 60) // Time in minutes
           : null;
-        const timeAgoText = timeAgo != null
-          ? `${Math.floor(timeAgo / 60)}h ${timeAgo % 60}m ago`
-          : 'Unknown';
 
-        otherBossesRows += `
-          <tr class="border-b border-gray-700">
-            <td class="py-1 px-2 text-sm text-gray-300">${bossName}</td>
-            <td class="py-1 px-2 text-sm text-white">${formatTimeFromNow(killedAt)}</td>
-            <td class="py-1 px-2 text-sm text-white">${entry.killedBy || 'Unknown'}</td>
-            <td class="py-1 px-2 text-sm text-white">${timeAgoText}</td>
-          </tr>
-        `;
+        otherBossesData.push({
+          bossName,
+          killedAt,
+          killedBy: entry.killedBy || 'Unknown',
+          timeAgo,
+        });
       });
+    }
+  });
+
+  // Sort by timeAgo (most recent first)
+  otherBossesData.sort((a, b) => a.timeAgo - b.timeAgo);
+
+  // Generate rows for the sorted data
+  otherBossesData.forEach(({ bossName, killedAt, killedBy, timeAgo }, index) => {
+    if (index < 20) { // Only display the top 20
+      const timeAgoText = timeAgo != null
+        ? `${Math.floor(timeAgo / 60)}h ${timeAgo % 60}m ago`
+        : 'Unknown';
+
+      otherBossesRows += `
+        <tr class="border-b border-gray-700">
+          <td class="py-1 px-2 text-sm text-gray-300">${bossName}</td>
+          <td class="py-1 px-2 text-sm text-white">${formatTimeFromNow(killedAt)}</td>
+          <td class="py-1 px-2 text-sm text-white">${killedBy}</td>
+          <td class="py-1 px-2 text-sm text-white">${timeAgoText}</td>
+        </tr>
+      `;
     }
   });
 
@@ -272,5 +338,6 @@ function renderAllBosses(data) {
   container.appendChild(otherBossesWrapper);
 }
 
+// Start the data loading and countdown process
 loadBossData();
-setInterval(loadBossData, 30000); // refresh every 30s
+setInterval(loadBossData, 60000); // Refresh every 60 seconds

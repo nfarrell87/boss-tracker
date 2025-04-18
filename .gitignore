@@ -15,3 +15,4 @@ Thumbs.db
 
 # System files
 *.swp
+site/bossData.json
