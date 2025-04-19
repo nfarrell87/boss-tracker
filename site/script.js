@@ -1,36 +1,43 @@
 const bossCategories = {
   "Big Dragons": {
-    "Cuuldurach the Glimmer King": 360,
-    "Golestandt": 360,
-    "Gjalpinulva": 360,
+    "Cuuldurach the Glimmer King": { respawnTime: 360, alias: "Dragon of Hibernia" },
+    "Golestandt": { respawnTime: 360, alias: "Dragon of Albion" },
+    "Gjalpinulva": { respawnTime: 360, alias: "Dragon of Midgard" },
   },
   "Darkness Falls": {
-    "Legion": 240,
-    "Beliathan": 240,
-    "Prince Abdin": 120,
-    "Prince Asmoien": 120,
-    "Prince Ba'alorien": 120,
-    "High Lord Baelerdoth": 60,
-    "High Lord Baln": 60,
-    "High Lord Oro": 60,
-    "High Lord Saeor": 60,
+    "Legion": { respawnTime: 240, alias: "" },
+    "Beliathan": { respawnTime: 240, alias: "" },
+    "Prince Abdin": { respawnTime: 120, alias: "" },
+    "Prince Asmoien": { respawnTime: 120, alias: "" },
+    "Prince Ba'alorien": { respawnTime: 120, alias: "" },
+    "High Lord Baelerdoth": { respawnTime: 60, alias: "" },
+    "High Lord Baln": { respawnTime: 60, alias: "" },
+    "High Lord Oro": { respawnTime: 60, alias: "" },
+    "High Lord Saeor": { respawnTime: 60, alias: "" },
   },
   "Summoner's Hall": {
-    "Grand Summoner Govannon": 120,
-    "Summoner Roesia": 120,
-    "Summoner Cunovinda": 120,
-    "Summoner Lossren": 120,
-    "Aidon the Archwizard": 120,
+    "Grand Summoner Govannon": { respawnTime: 120, alias: "" },
+    "Summoner Roesia": { respawnTime: 120, alias: "" },
+    "Summoner Cunovinda": { respawnTime: 120, alias: "" },
+    "Summoner Lossren": { respawnTime: 120, alias: "" },
+    "Aidon the Archwizard": { respawnTime: 120, alias: "" },
   },
   "NF Dragons": {
-    "Kjorlakath": 30,
-    "Sarnvasath": 30,
-    "Iarnvidiur": 30,
+    "Amrateth": { respawnTime: 30, alias: "Dragon of Albion" },
+    "Sarnvasath": { respawnTime: 30, alias: "Dragon of Hibernia" },
+    "Kjorlakath": { respawnTime: 30, alias: "Dragon of Midgard" },
   },
   "SI Epic Dungeon": {
-    "Apocalypse": 360,
-    "Olcasgean": 360,
-    "King Tuscar": 360,
+    "Apocalypse": { respawnTime: 360, alias: "Caer Sidi" },
+    "Olcasgean": { respawnTime: 360, alias: "Galladoria" },
+    "King Tuscar": { respawnTime: 360, alias: "Tuscaran Glacier" },
+    "Orylle": { respawnTime: 240, alias: "Krondon" },
+    "Balor": { respawnTime: 240, alias: "Tur Suil" },
+    "Iarnvidiur": { respawnTime: 240, alias: "Iarnvidiur's Lair" },
+  },
+  "ML Dungeons": {
+    "The Phoenix": { respawnTime: 240, alias: "ML9" },
+    "Draco": { respawnTime: 120, alias: "ML10" },
   },
 };
 
@@ -83,7 +90,13 @@ function renderCategoryFilters() {
 function formatTimeFromNow(timestamp) {
   if (!timestamp) return "Unknown";
   const date = new Date(timestamp * 1000);
-  return date.toLocaleString();
+  return date.toLocaleString([], { 
+    month: 'numeric', 
+    day: 'numeric', 
+    hour: '2-digit', 
+    minute: '2-digit', 
+    hour12: true 
+  });
 }
 
 function formatDeltaMinutes(minutes) {
@@ -179,15 +192,15 @@ function renderAllBosses(data) {
     bossesGrid.className = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6";
 
     // Loop through bosses in the category
-    Object.entries(bosses).forEach(([bossName, base]) => {
+    Object.entries(bosses).forEach(([bossName, { respawnTime, alias }]) => {
       const history = data[bossName] || [];
       const latestKill = history[0];
 
-      const variance = Math.floor(base * 0.2);
+      const variance = Math.floor(respawnTime * 0.2);
       const sinceKill = latestKill ? (now - latestKill.killedAt) / 60 : null;
 
-      const earliest = base - variance;
-      const latest = base + variance;
+      const earliest = respawnTime - variance;
+      const latest = respawnTime + variance;
 
       // Determine if the boss is alive or calculate the respawn window
       const isAlive = sinceKill != null && sinceKill >= latest;
@@ -237,9 +250,12 @@ function renderAllBosses(data) {
 
       bossCard.innerHTML = `
         <div class="flex justify-between items-center mb-2">
-          <h3 class="text-xl font-semibold text-orange-200 flex-grow text-left">${bossName}</h3>
-          <p class="text-xs text-gray-400 text-right flex-shrink-0 w-1/3">
-            Base Respawn Time: ${formatDeltaMinutes(base)}<br />
+          <h3 class="text-xl font-semibold text-orange-200 flex-grow text-left leading-none">
+            ${bossName}
+            ${alias ? `<br /><span class="text-sm text-gray-400">(${alias})</span>` : ""}
+          </h3>
+          <p class="text-xs text-gray-400 text-right flex-shrink-0 w-2/5">
+            Base Respawn Time: ${formatDeltaMinutes(respawnTime)}<br />
             (+/- 20%)
           </p>
         </div>
@@ -271,7 +287,7 @@ function renderAllBosses(data) {
                   <th class="py-1 px-2">#</th>
                   <th class="py-1 px-2">Time</th>
                   <th class="py-1 px-2">Killed By</th>
-                  <th class="py-1 px-2">Duration</th>
+                  <th class="py-1 px-2">Time Since</th>
                 </tr>
               </thead>
               <tbody>${historyRows}</tbody>
@@ -351,7 +367,7 @@ function renderAllBosses(data) {
           <th class="py-1 px-2">Boss</th>
           <th class="py-1 px-2">Time</th>
           <th class="py-1 px-2">Killed By</th>
-          <th class="py-1 px-2">Duration</th>
+          <th class="py-1 px-2">Time Since</th>
         </tr>
       </thead>
       <tbody>${otherBossesRows || `<tr><td colspan="4" class="text-sm text-center text-gray-500 py-2">No data yet</td></tr>`}</tbody>
