@@ -404,10 +404,10 @@ function renderAllBosses(data) {
       // Custom layout for Summoner's Hall
       bossesGrid.className = "grid gap-6";
 
-      // Top row: First three bosses
+      // Top row: Grand Summoner Govannon and Aidon the Archwizard
       const topRow = document.createElement("div");
-      topRow.className = "grid grid-cols-3 gap-6 justify-center";
-      ["Grand Summoner Govannon", "Summoner Roesia", "Summoner Cunovinda"].forEach((bossName) => {
+      topRow.className = "grid grid-cols-2 gap-6 justify-center";
+      ["Grand Summoner Govannon", "Aidon the Archwizard"].forEach((bossName) => {
         const boss = bosses[bossName];
         if (boss) {
           const bossCard = createBossCard(bossName, boss, data[bossName] || []);
@@ -416,10 +416,10 @@ function renderAllBosses(data) {
       });
       bossesGrid.appendChild(topRow);
 
-      // Bottom row: Last two bosses
+      // Bottom row: Summoner Roesia, Summoner Cunovinda, and Summoner Lossren
       const bottomRow = document.createElement("div");
-      bottomRow.className = "grid grid-cols-2 gap-6 justify-center";
-      ["Summoner Lossren", "Aidon the Archwizard"].forEach((bossName) => {
+      bottomRow.className = "grid grid-cols-3 gap-6 justify-center";
+      ["Summoner Roesia", "Summoner Cunovinda", "Summoner Lossren"].forEach((bossName) => {
         const boss = bosses[bossName];
         if (boss) {
           const bossCard = createBossCard(bossName, boss, data[bossName] || []);
