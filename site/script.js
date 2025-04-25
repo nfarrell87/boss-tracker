@@ -113,10 +113,9 @@ async function loadBossData() {
     const res = await fetch('/data');
     const newData = await res.json();
 
-    if (JSON.stringify(newData) !== JSON.stringify(currentData)) {
-      currentData = newData;
-      renderAllBosses(newData);
-    }
+    // Always update currentData and re-render bosses
+    currentData = newData;
+    renderAllBosses(newData);
 
     const now = new Date();
     nextUpdateTime = new Date(now.getTime() + 60000);
