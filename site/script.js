@@ -358,7 +358,6 @@ function renderAllBosses(data) {
 
     // Create a grid for the bosses inside the category
     const bossesGrid = document.createElement("div");
-    bossesGrid.className = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6";
 
     if (categoryName === "Darkness Falls") {
       // Custom layout for Darkness Falls
@@ -428,6 +427,7 @@ function renderAllBosses(data) {
       bossesGrid.appendChild(bottomRow);
     } else {
       // Default layout for other categories
+      bossesGrid.className = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6";
       Object.entries(bosses).forEach(([bossName, boss]) => {
         const bossCard = createBossCard(bossName, boss, data[bossName] || []);
         bossesGrid.appendChild(bossCard);
@@ -440,6 +440,78 @@ function renderAllBosses(data) {
   });
 
   container.appendChild(gridWrapper);
+
+  // Add the "Other Bosses" table
+  const otherBossesWrapper = document.createElement("div");
+  otherBossesWrapper.className = "bg-gray-800 text-white rounded-xl shadow-lg p-6 mt-10";
+
+  const otherBossesTitle = document.createElement("h2");
+  otherBossesTitle.className = "text-3xl font-bold text-center text-blue-400 mb-6";
+  otherBossesTitle.textContent = "Other Bosses";
+
+  const otherBossesTable = document.createElement("div");
+  otherBossesTable.className = "overflow-x-auto";
+
+  let otherBossesRows = '';
+  const otherBossesData = [];
+
+  // Collect all "Other Bosses" data
+  Object.entries(data).forEach(([bossName, history]) => {
+    if (!Object.values(bossCategories).some(category => bossName in category)) {
+      history.forEach((entry) => {
+        const killedAt = entry.killedAt || 0;
+        const timeAgo = killedAt
+          ? Math.floor((now - killedAt) / 60) // Time in minutes
+          : null;
+
+        otherBossesData.push({
+          bossName,
+          killedAt,
+          killedBy: entry.killedBy || 'Unknown',
+          timeAgo,
+        });
+      });
+    }
+  });
+
+  // Sort by timeAgo (most recent first)
+  otherBossesData.sort((a, b) => a.timeAgo - b.timeAgo);
+
+  // Generate rows for the sorted data
+  otherBossesData.forEach(({ bossName, killedAt, killedBy, timeAgo }, index) => {
+    if (index < 30) { // Only display the top 30
+      const timeAgoText = timeAgo != null
+        ? `${Math.floor(timeAgo / 60)}h ${timeAgo % 60}m ago`
+        : 'Unknown';
+
+      otherBossesRows += `
+        <tr class="border-b border-gray-700">
+          <td class="py-1 px-2 text-sm text-gray-300">${bossName}</td>
+          <td class="py-1 px-2 text-sm text-white">${formatTimeFromNow(killedAt)}</td>
+          <td class="py-1 px-2 text-sm text-white">${killedBy}</td>
+          <td class="py-1 px-2 text-sm text-white">${timeAgoText}</td>
+        </tr>
+      `;
+    }
+  });
+
+  otherBossesTable.innerHTML = `
+    <table class="table-auto w-full text-left text-sm border border-gray-700">
+      <thead class="bg-gray-700 text-gray-200">
+        <tr>
+          <th class="py-1 px-2">Boss</th>
+          <th class="py-1 px-2">Time</th>
+          <th class="py-1 px-2">Killed By</th>
+          <th class="py-1 px-2">Time Since</th>
+        </tr>
+      </thead>
+      <tbody>${otherBossesRows || `<tr><td colspan="4" class="text-sm text-center text-gray-500 py-2">No data yet</td></tr>`}</tbody>
+    </table>
+  `;
+
+  otherBossesWrapper.appendChild(otherBossesTitle);
+  otherBossesWrapper.appendChild(otherBossesTable);
+  container.appendChild(otherBossesWrapper);
 }
 
 // Start the data loading and countdown process
