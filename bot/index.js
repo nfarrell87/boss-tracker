@@ -4,6 +4,35 @@ const fs = require('fs');
 const path = require('path');
 const express = require('express');
 
+// Simple in-memory rate limiting
+const requestCounts = new Map();
+const RATE_LIMIT = 30; // requests per minute
+const WINDOW_MS = 60000; // 1 minute
+
+function rateLimit(req, res, next) {
+  const ip = req.ip || req.connection.remoteAddress;
+  const now = Date.now();
+  
+  if (!requestCounts.has(ip)) {
+    requestCounts.set(ip, []);
+  }
+  
+  const requests = requestCounts.get(ip);
+  const recentRequests = requests.filter(time => time > (now - WINDOW_MS));
+  
+  if (recentRequests.length >= RATE_LIMIT) {
+    return res.status(429).json({ 
+      error: 'Rate limit exceeded. Try again later.',
+      limit: RATE_LIMIT,
+      window: '1 minute'
+    });
+  }
+  
+  recentRequests.push(now);
+  requestCounts.set(ip, recentRequests);
+  next();
+}
+
 // ===== DISCORD BOT =====
 const client = new Client({
   intents: [
@@ -78,10 +107,77 @@ const PORT = 3000;
 // Serve static files from /site
 app.use(express.static(path.join(__dirname, '../site')));
 
+// Apply rate limiting to API routes
+app.use('/api', rateLimit);
+app.use('/data', rateLimit);
+
+let dataCache = null;
+let cacheTimestamp = 0;
+const CACHE_DURATION = 30000; // 30 seconds
+
+function getCachedData() {
+  const now = Date.now();
+  if (dataCache && (now - cacheTimestamp) < CACHE_DURATION) {
+    return dataCache;
+  }
+  
+  try {
+    const dataPath = path.join(__dirname, '../site/bossData.json');
+    const data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+    dataCache = data;
+    cacheTimestamp = now;
+    return data;
+  } catch (error) {
+    return dataCache || {}; // Return old cache if read fails
+  }
+}
+
 // Serve bossData.json through an API endpoint
-app.get('/data', (req, res) => {
-  const dataPath = path.join(__dirname, '../site/bossData.json');
-  res.sendFile(dataPath);
+app.get('/data', rateLimit, (req, res) => {
+  try {
+    const data = getCachedData();
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to read data' });
+  }
+});
+
+// New API endpoint for realm-specific data
+app.get('/api/realm/:realm', rateLimit, (req, res) => {
+  const realm = req.params.realm.toLowerCase();
+  
+  try {
+    const data = getCachedData();
+    const realmData = {};
+    
+    Object.entries(data).forEach(([bossName, kills]) => {
+      const realmKills = kills.filter(kill => {
+        const killedBy = (kill.killedBy || '').toLowerCase();
+        return killedBy.includes(realm);
+      });
+      
+      if (realmKills.length > 0) {
+        realmData[bossName] = realmKills;
+      }
+    });
+    
+    res.json(realmData);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to read data' });
+  }
+});
+
+// API endpoint for specific boss data
+app.get('/api/boss/:bossName', rateLimit, (req, res) => {
+  const bossName = req.params.bossName;
+  
+  try {
+    const data = getCachedData();
+    const bossData = data[bossName] || [];
+    res.json({ [bossName]: bossData });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to read data' });
+  }
 });
 
 app.listen(PORT, () => {
