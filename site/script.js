@@ -35,8 +35,8 @@ const bossCategories = {
     "Iarnvidiur": { respawnTime: 240, alias: "Iarnvidiur's Lair" },
   },
   "ML Dungeons": {
-    "Draco": { respawnTime: 120, alias: "ML10" },
     "The Phoenix": { respawnTime: 360, alias: "ML9", realms: true },
+    "Draco": { respawnTime: 120, alias: "ML10" },
   },
 };
 
