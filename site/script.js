@@ -35,8 +35,8 @@ const bossCategories = {
     "Iarnvidiur": { respawnTime: 240, alias: "Iarnvidiur's Lair" },
   },
   "ML Dungeons": {
-    "The Phoenix": { respawnTime: 240, alias: "ML9" },
     "Draco": { respawnTime: 120, alias: "ML10" },
+    "The Phoenix": { respawnTime: 240, alias: "ML9", realms: true },
   },
 };
 
@@ -122,7 +122,7 @@ async function loadBossData() {
 
     const updateInfo = document.getElementById("update-info");
     updateInfo.innerHTML = `
-      <span>Last Updated: <strong>${now.toLocaleTimeString()}</strong></span>
+      <span>Last Updated: <strong>${now.toLocaleTimeString([], { hour12: true, hour: '2-digit', minute: '2-digit' })}</strong></span>
       <span> | Next Update: <strong id="countdown">60</strong> seconds</span>
     `;
 
@@ -224,10 +224,34 @@ function startCountdown() {
   }, 60000); // Update every minute
 }
 
-function createBossCard(bossName, boss, history) {
+function extractRealm(killedBy) {
+  if (!killedBy) return null;
+  const lowerText = killedBy.toLowerCase();
+  if (lowerText.includes('albion')) return 'Albion';
+  if (lowerText.includes('hibernia')) return 'Hibernia';
+  if (lowerText.includes('midgard')) return 'Midgard';
+  return null;
+}
+
+function getRealmBorderClass(realm) {
+  switch (realm) {
+    case 'Albion': return 'border-l-8 border-l-[#f96669]';
+    case 'Hibernia': return 'border-l-8 border-l-[#44d56c]';
+    case 'Midgard': return 'border-l-8 border-l-[#46a4fe]';
+    default: return '';
+  }
+}
+
+function createBossCard(bossName, boss, history, realm = null) {
   const now = Math.floor(Date.now() / 1000);
   const { respawnTime, alias } = boss;
-  const latestKill = history[0];
+  
+  // Filter history by realm if this is a realm-specific card
+  const filteredHistory = realm 
+    ? history.filter(entry => extractRealm(entry.killedBy) === realm)
+    : history;
+  
+  const latestKill = filteredHistory[0];
 
   const variance = Math.floor(respawnTime * 0.2);
   const sinceKill = latestKill ? (now - latestKill.killedAt) / 60 : null;
@@ -243,8 +267,14 @@ function createBossCard(bossName, boss, history) {
   // Determine if the boss is in the spawn window
   const isInSpawnWindow = earliestIn === 0 && latestIn > 0;
 
-  const historyRows = history.length > 0
-    ? history.slice(0, 5).map((entry, i) => {
+  // Display name with realm suffix if applicable
+  const displayName = realm ? `${bossName} (${realm})` : bossName;
+  
+  // Get realm border class
+  const borderClass = realm ? getRealmBorderClass(realm) : '';
+
+  const historyRows = filteredHistory.length > 0
+    ? filteredHistory.slice(0, 5).map((entry, i) => {
       const lowerText = entry.killedBy?.toLowerCase() || '';
       let rowClass = 'bg-transparent';
       let realmEmoji = '';
@@ -281,12 +311,12 @@ function createBossCard(bossName, boss, history) {
     : `<tr><td colspan="4" class="text-sm text-center text-gray-500 py-2">No history available</td></tr>`;
 
   const bossCard = document.createElement("div");
-  bossCard.className = "bg-gray-700 text-white rounded-lg shadow p-4";
+  bossCard.className = `bg-gray-700 text-white rounded-lg shadow p-4 ${borderClass}`;
 
   bossCard.innerHTML = `
     <div class="flex justify-between items-center mb-2">
       <h3 class="text-xl font-semibold text-orange-200 flex-grow text-left leading-none">
-        ${bossName}
+        ${displayName}
         ${alias ? `<br /><span class="text-sm text-gray-400">(${alias})</span>` : ""}
       </h3>
       <p class="text-xs text-gray-400 text-right flex-shrink-0 w-2/5">
@@ -334,184 +364,73 @@ function createBossCard(bossName, boss, history) {
 
 function renderAllBosses(data) {
   const container = document.getElementById("boss-container");
-  container.innerHTML = '';
+  container.innerHTML = "";
 
-  // Define the current time at the start of the function
-  const now = Math.floor(Date.now() / 1000);
-
-  // Create a grid container for categories
-  const gridWrapper = document.createElement("div");
-  gridWrapper.className = "grid grid-cols-1 gap-10";
-
-  // Loop through each category
   Object.entries(bossCategories).forEach(([categoryName, bosses]) => {
-    if (!categoryVisibility[categoryName]) return; // Skip rendering if category is hidden
+    if (!categoryVisibility[categoryName]) return;
 
-    // Create a card for the category
-    const categoryCard = document.createElement("div");
-    categoryCard.className = "bg-gray-800 text-white rounded-xl shadow-lg p-6";
-
-    // Add the category title
+    const categorySection = document.createElement("div");
+    categorySection.className = "mb-8";
+    
     const categoryTitle = document.createElement("h2");
-    categoryTitle.className = "text-3xl font-bold text-center text-blue-400 mb-6";
+    categoryTitle.className = "text-2xl font-bold text-orange-200 mb-4 border-b-2 border-orange-500 pb-2";
     categoryTitle.textContent = categoryName;
+    categorySection.appendChild(categoryTitle);
 
-    // Create a grid for the bosses inside the category
     const bossesGrid = document.createElement("div");
-
+    
+    // Special layout for specific categories
     if (categoryName === "Darkness Falls") {
-      // Custom layout for Darkness Falls
-      bossesGrid.className = "grid gap-6";
-
-      // Top row: Legion and one High Lord
-      const topRow = document.createElement("div");
-      topRow.className = "grid grid-cols-2 gap-6 justify-center";
-      ["Legion", "High Lord Baelerdoth"].forEach((bossName) => {
-        const boss = bosses[bossName];
-        if (boss) {
-          const bossCard = createBossCard(bossName, boss, data[bossName] || []);
-          topRow.appendChild(bossCard);
-        }
-      });
-      bossesGrid.appendChild(topRow);
-
-      // Middle row: Three High Lords
-      const middleRow = document.createElement("div");
-      middleRow.className = "grid grid-cols-3 gap-6 justify-center";
-      ["High Lord Baln", "High Lord Oro", "High Lord Saeor"].forEach((bossName) => {
-        const boss = bosses[bossName];
-        if (boss) {
-          const bossCard = createBossCard(bossName, boss, data[bossName] || []);
-          middleRow.appendChild(bossCard);
-        }
-      });
-      bossesGrid.appendChild(middleRow);
-
-      // Bottom row: Three Princes
-      const bottomRow = document.createElement("div");
-      bottomRow.className = "grid grid-cols-3 gap-6 justify-center";
-      ["Prince Asmoien", "Prince Ba'alorien", "Prince Abdin"].forEach((bossName) => {
-        const boss = bosses[bossName];
-        if (boss) {
-          const bossCard = createBossCard(bossName, boss, data[bossName] || []);
-          bottomRow.appendChild(bossCard);
-        }
-      });
-      bossesGrid.appendChild(bottomRow);
+      bossesGrid.className = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-6";
     } else if (categoryName === "Summoner's Hall") {
-      // Custom layout for Summoner's Hall
-      bossesGrid.className = "grid gap-6";
-
-      // Top row: Grand Summoner Govannon and Aidon the Archwizard
-      const topRow = document.createElement("div");
-      topRow.className = "grid grid-cols-2 gap-6 justify-center";
-      ["Grand Summoner Govannon", "Aidon the Archwizard"].forEach((bossName) => {
-        const boss = bosses[bossName];
-        if (boss) {
-          const bossCard = createBossCard(bossName, boss, data[bossName] || []);
-          topRow.appendChild(bossCard);
-        }
-      });
-      bossesGrid.appendChild(topRow);
-
-      // Bottom row: Summoner Roesia, Summoner Cunovinda, and Summoner Lossren
-      const bottomRow = document.createElement("div");
-      bottomRow.className = "grid grid-cols-3 gap-6 justify-center";
-      ["Summoner Roesia", "Summoner Cunovinda", "Summoner Lossren"].forEach((bossName) => {
-        const boss = bosses[bossName];
-        if (boss) {
-          const bossCard = createBossCard(bossName, boss, data[bossName] || []);
-          bottomRow.appendChild(bossCard);
-        }
-      });
-      bossesGrid.appendChild(bottomRow);
+      bossesGrid.className = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6";
     } else {
-      // Default layout for other categories
-      bossesGrid.className = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6";
-      Object.entries(bosses).forEach(([bossName, boss]) => {
-        const bossCard = createBossCard(bossName, boss, data[bossName] || []);
-        bossesGrid.appendChild(bossCard);
-      });
+      // Default layout for other categories - center single items
+      const bossCount = Object.keys(bosses).reduce((count, bossName) => {
+        const boss = bosses[bossName];
+        return count + (boss.realms ? 3 : 1); // Count realm-specific bosses as 3
+      }, 0);
+      
+      if (bossCount === 1) {
+        // Center single boss cards
+        bossesGrid.className = "flex justify-center";
+        bossesGrid.innerHTML = `<div class="w-full max-w-md">${''}</div>`;
+      } else {
+        bossesGrid.className = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6";
+      }
     }
 
-    categoryCard.appendChild(categoryTitle);
-    categoryCard.appendChild(bossesGrid);
-    gridWrapper.appendChild(categoryCard);
-  });
-
-  container.appendChild(gridWrapper);
-
-  // Add the "Other Bosses" table
-  const otherBossesWrapper = document.createElement("div");
-  otherBossesWrapper.className = "bg-gray-800 text-white rounded-xl shadow-lg p-6 mt-10";
-
-  const otherBossesTitle = document.createElement("h2");
-  otherBossesTitle.className = "text-3xl font-bold text-center text-blue-400 mb-6";
-  otherBossesTitle.textContent = "Other Bosses";
-
-  const otherBossesTable = document.createElement("div");
-  otherBossesTable.className = "overflow-x-auto";
-
-  let otherBossesRows = '';
-  const otherBossesData = [];
-
-  // Collect all "Other Bosses" data
-  Object.entries(data).forEach(([bossName, history]) => {
-    if (!Object.values(bossCategories).some(category => bossName in category)) {
-      history.forEach((entry) => {
-        const killedAt = entry.killedAt || 0;
-        const timeAgo = killedAt
-          ? Math.floor((now - killedAt) / 60) // Time in minutes
-          : null;
-
-        otherBossesData.push({
-          bossName,
-          killedAt,
-          killedBy: entry.killedBy || 'Unknown',
-          timeAgo,
+    Object.entries(bosses).forEach(([bossName, boss]) => {
+      if (boss.realms) {
+        // Create separate cards for each realm
+        ['Albion', 'Hibernia', 'Midgard'].forEach(realm => {
+          const bossCard = createBossCard(bossName, boss, data[bossName] || [], realm);
+          
+          // Handle centering for single boss
+          if (bossesGrid.className.includes('justify-center')) {
+            const centerWrapper = bossesGrid.querySelector('div');
+            centerWrapper.appendChild(bossCard);
+          } else {
+            bossesGrid.appendChild(bossCard);
+          }
         });
-      });
-    }
+      } else {
+        // Create single card for non-realm-specific bosses
+        const bossCard = createBossCard(bossName, boss, data[bossName] || []);
+        
+        // Handle centering for single boss
+        if (bossesGrid.className.includes('justify-center')) {
+          const centerWrapper = bossesGrid.querySelector('div');
+          centerWrapper.appendChild(bossCard);
+        } else {
+          bossesGrid.appendChild(bossCard);
+        }
+      }
+    });
+
+    categorySection.appendChild(bossesGrid);
+    container.appendChild(categorySection);
   });
-
-  // Sort by timeAgo (most recent first)
-  otherBossesData.sort((a, b) => a.timeAgo - b.timeAgo);
-
-  // Generate rows for the sorted data
-  otherBossesData.forEach(({ bossName, killedAt, killedBy, timeAgo }, index) => {
-    if (index < 30) { // Only display the top 30
-      const timeAgoText = timeAgo != null
-        ? `${Math.floor(timeAgo / 60)}h ${timeAgo % 60}m ago`
-        : 'Unknown';
-
-      otherBossesRows += `
-        <tr class="border-b border-gray-700">
-          <td class="py-1 px-2 text-sm text-gray-300">${bossName}</td>
-          <td class="py-1 px-2 text-sm text-white">${formatTimeFromNow(killedAt)}</td>
-          <td class="py-1 px-2 text-sm text-white">${killedBy}</td>
-          <td class="py-1 px-2 text-sm text-white">${timeAgoText}</td>
-        </tr>
-      `;
-    }
-  });
-
-  otherBossesTable.innerHTML = `
-    <table class="table-auto w-full text-left text-sm border border-gray-700">
-      <thead class="bg-gray-700 text-gray-200">
-        <tr>
-          <th class="py-1 px-2">Boss</th>
-          <th class="py-1 px-2">Time</th>
-          <th class="py-1 px-2">Killed By</th>
-          <th class="py-1 px-2">Time Since</th>
-        </tr>
-      </thead>
-      <tbody>${otherBossesRows || `<tr><td colspan="4" class="text-sm text-center text-gray-500 py-2">No data yet</td></tr>`}</tbody>
-    </table>
-  `;
-
-  otherBossesWrapper.appendChild(otherBossesTitle);
-  otherBossesWrapper.appendChild(otherBossesTable);
-  container.appendChild(otherBossesWrapper);
 }
 
 // Start the data loading and countdown process
