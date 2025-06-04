@@ -42,13 +42,6 @@ const bossCategories = {
 
 const categoryVisibility = JSON.parse(localStorage.getItem('categoryVisibility')) || {};
 
-// Ensure all categories have a default visibility state
-Object.keys(bossCategories).forEach((category) => {
-  if (categoryVisibility[category] === undefined) {
-    categoryVisibility[category] = true; // Default to visible
-  }
-});
-
 // Save visibility state to localStorage
 function saveCategoryVisibility() {
   localStorage.setItem('categoryVisibility', JSON.stringify(categoryVisibility));
@@ -113,10 +106,9 @@ async function loadBossData() {
     const res = await fetch('/data');
     const newData = await res.json();
 
-    // Always update currentData and re-render bosses
     currentData = newData;
     renderAllBosses(newData);
-    renderCategoryFilters(); // Move this here so it runs after data is loaded
+    renderCategoryFilters(); // This is the only call we need
 
     const now = new Date();
     nextUpdateTime = new Date(now.getTime() + 60000);
@@ -626,6 +618,6 @@ function renderCategoryFilters() {
   });
 }
 
-// Start the data loading and countdown process
+// Start the data loading process
 loadBossData();
 setInterval(loadBossData, 60000); // Refresh every 60 seconds
