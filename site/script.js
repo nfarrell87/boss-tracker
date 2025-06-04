@@ -36,7 +36,7 @@ const bossCategories = {
   },
   "ML Dungeons": {
     "Draco": { respawnTime: 120, alias: "ML10" },
-    "The Phoenix": { respawnTime: 240, alias: "ML9", realms: true },
+    "The Phoenix": { respawnTime: 360, alias: "ML9", realms: true },
   },
 };
 
