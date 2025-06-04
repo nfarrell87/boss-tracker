@@ -4,13 +4,19 @@ const fs = require('fs');
 const path = require('path');
 const express = require('express');
 
-// Simple in-memory rate limiting
+// Simple rate limiting - but exclude localhost/same server requests
 const requestCounts = new Map();
-const RATE_LIMIT = 30; // requests per minute
-const WINDOW_MS = 60000; // 1 minute
+const RATE_LIMIT = 30;
+const WINDOW_MS = 60000;
 
 function rateLimit(req, res, next) {
   const ip = req.ip || req.connection.remoteAddress;
+  
+  // Skip rate limiting for localhost and internal requests
+  if (ip === '127.0.0.1' || ip === '::1' || ip === '::ffff:127.0.0.1') {
+    return next();
+  }
+  
   const now = Date.now();
   
   if (!requestCounts.has(ip)) {
@@ -22,9 +28,7 @@ function rateLimit(req, res, next) {
   
   if (recentRequests.length >= RATE_LIMIT) {
     return res.status(429).json({ 
-      error: 'Rate limit exceeded. Try again later.',
-      limit: RATE_LIMIT,
-      window: '1 minute'
+      error: 'Rate limit: 30 requests per minute maximum' 
     });
   }
   
@@ -133,7 +137,7 @@ function getCachedData() {
 }
 
 // Serve bossData.json through an API endpoint
-app.get('/data', rateLimit, (req, res) => {
+app.get('/data', (req, res) => {
   try {
     const data = getCachedData();
     res.json(data);
