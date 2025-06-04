@@ -451,10 +451,6 @@ function createOtherBossesCard(otherBossKills) {
         Other Bosses
         <br /><span class="text-sm text-gray-400">(Last 50 kills)</span>
       </h3>
-      <p class="text-xs text-gray-400 text-right flex-shrink-0 w-2/5">
-        Bosses not in predefined<br />
-        categories
-      </p>
     </div>
     <div class="mt-4">
       <table id="boss-table-other-bosses" class="boss-history-table table-auto w-full text-left text-sm border border-gray-700" data-boss="Other Bosses" data-realm="all">
