@@ -96,9 +96,25 @@ client.on('messageCreate', (message) => {
 
   if (!alreadyLogged) {
     allData[boss].unshift(newKill); // Add the new kill to the front
-    allData[boss] = allData[boss].slice(0, 5); // Keep only the latest 5 entries
+    
+    // Check if this boss has separate realm spawns by importing the boss config
+    const bossConfigPath = path.join(__dirname, '../site/script.js');
+    let hasRealmSpawns = false;
+    
+    try {
+      const scriptContent = fs.readFileSync(bossConfigPath, 'utf-8');
+      const match = scriptContent.match(new RegExp(`"${boss}":\\s*{[^}]*realms:\\s*true`, 'i'));
+      hasRealmSpawns = !!match;
+    } catch (e) {
+      console.log('Could not read boss config, defaulting to 5 entries');
+    }
+    
+    // For bosses with realm spawns, keep 15 entries (5 per realm), for others keep 5
+    const maxEntries = hasRealmSpawns ? 15 : 5;
+    allData[boss] = allData[boss].slice(0, maxEntries);
+    
     fs.writeFileSync(dataPath, JSON.stringify(allData, null, 2)); // Save the updated data
-    console.log(`✅ Logged kill for ${boss}`);
+    console.log(`✅ Logged kill for ${boss}${hasRealmSpawns ? ' (realm boss)' : ''}`);
   }
 });
 
