@@ -107,8 +107,8 @@ async function loadBossData() {
     const newData = await res.json();
 
     currentData = newData;
+    renderCategoryFilters(); // Move this line to after currentData is set
     renderAllBosses(newData);
-    renderCategoryFilters(); // This is the only call we need
 
     const now = new Date();
     nextUpdateTime = new Date(now.getTime() + 60000);
