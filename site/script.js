@@ -52,7 +52,14 @@ function renderCategoryFilters() {
   const filtersContainer = document.getElementById('category-filters');
   filtersContainer.innerHTML = ''; // Clear existing filters
 
-  Object.keys(bossCategories).forEach((category) => {
+  // Get all categories including potential "Other Bosses"
+  const allCategories = { ...bossCategories };
+  const otherBossKills = getOtherBosses(currentData);
+  if (otherBossKills.length > 0) {
+    allCategories["Other Bosses"] = {};
+  }
+
+  Object.keys(allCategories).forEach((category) => {
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
     checkbox.id = `filter-${category}`;
@@ -107,7 +114,22 @@ async function loadBossData() {
     const newData = await res.json();
 
     currentData = newData;
-    renderCategoryFilters(); // Move this line to after currentData is set
+    
+    // Set default visibility for ALL categories BEFORE any rendering
+    const otherBossKills = getOtherBosses(currentData);
+    const allCategories = { ...bossCategories };
+    if (otherBossKills.length > 0) {
+      allCategories["Other Bosses"] = {};
+    }
+    
+    // Ensure all categories have default visibility set to true
+    Object.keys(allCategories).forEach(category => {
+      if (categoryVisibility[category] === undefined) {
+        categoryVisibility[category] = true;
+      }
+    });
+    
+    renderCategoryFilters();
     renderAllBosses(newData);
 
     const now = new Date();
@@ -583,11 +605,6 @@ function renderCategoryFilters() {
   }
 
   Object.keys(allCategories).forEach((category) => {
-    // Set default visibility for dynamic categories
-    if (categoryVisibility[category] === undefined) {
-      categoryVisibility[category] = true;
-    }
-
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
     checkbox.id = `filter-${category}`;
