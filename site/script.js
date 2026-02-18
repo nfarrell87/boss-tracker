@@ -636,6 +636,108 @@ function renderCategoryFilters() {
   });
 }
 
+// --- Swing Speed Calculator (from DAoC Utils archive) ---
+function validateSwingInput(dom, optional) {
+  const val = dom.value;
+  if (!optional && (val === "" || val === undefined)) {
+    dom.classList.add("border-red-500");
+    return null;
+  }
+  dom.classList.remove("border-red-500");
+  const n = parseFloat(val);
+  return (optional && (val === "" || isNaN(n))) ? null : n;
+}
+
+function getDecimal(percentage) {
+  if (percentage != null && !isNaN(percentage)) return percentage / 100;
+  return 0;
+}
+
+function calculateSwingSpeed(weaponSpeed, quickness, toa, haste, celerity) {
+  if (weaponSpeed == null || isNaN(weaponSpeed)) return null;
+  if (quickness > 250) quickness = 250;
+  toa = getDecimal(toa);
+  haste = getDecimal(haste);
+  celerity = getDecimal(celerity);
+  const speed = Math.floor(Math.floor(Math.floor(weaponSpeed * 100 * (1 - (quickness - 50) / 500)) * (1 - haste - celerity)) * (1 - toa)) / 100;
+  return Math.round(speed * 100) / 100;
+}
+
+function initSwingSpeedModal() {
+  const modal = document.getElementById("swing-speed-modal");
+  const btnOpen = document.getElementById("swing-speed-btn");
+  const btnClose = document.getElementById("swing-speed-close");
+  const btnClose2 = document.getElementById("swing-speed-close-btn");
+  const backdrop = document.getElementById("swing-speed-backdrop");
+  const btnCalculate = document.getElementById("swing-speed-calculate");
+  const resultsDiv = document.getElementById("swing-speed-results");
+  const resultText = document.getElementById("swing-speed-result-text");
+  const disclaimerText = document.getElementById("swing-speed-disclaimer");
+
+  function openModal() {
+    modal.classList.remove("hidden");
+    modal.setAttribute("aria-hidden", "false");
+  }
+
+  function closeModal() {
+    modal.classList.add("hidden");
+    modal.setAttribute("aria-hidden", "true");
+  }
+
+  const infoModal = document.getElementById("swing-speed-info-modal");
+  const btnInfo = document.getElementById("swing-speed-info-btn");
+  const infoBackdrop = document.getElementById("swing-speed-info-backdrop");
+  const infoClose = document.getElementById("swing-speed-info-close");
+  const infoCloseBtn = document.getElementById("swing-speed-info-close-btn");
+
+  function openInfoModal() {
+    infoModal.classList.remove("hidden");
+    infoModal.setAttribute("aria-hidden", "false");
+  }
+  function closeInfoModal() {
+    infoModal.classList.add("hidden");
+    infoModal.setAttribute("aria-hidden", "true");
+  }
+
+  btnInfo.addEventListener("click", openInfoModal);
+  infoBackdrop.addEventListener("click", closeInfoModal);
+  infoClose.addEventListener("click", closeInfoModal);
+  infoCloseBtn.addEventListener("click", closeInfoModal);
+
+  btnOpen.addEventListener("click", openModal);
+  btnClose.addEventListener("click", closeModal);
+  btnClose2.addEventListener("click", closeModal);
+  backdrop.addEventListener("click", closeModal);
+
+  btnCalculate.addEventListener("click", function () {
+    const mhWeaponSpeed = validateSwingInput(document.getElementById("mainhand-speed"), false);
+    const ohWeaponSpeed = validateSwingInput(document.getElementById("offhand-speed"), true);
+    const quickness = validateSwingInput(document.getElementById("quickness"), false) ?? 0;
+    const toa = validateSwingInput(document.getElementById("toa-melee-speed"), true) ?? 0;
+    const haste = validateSwingInput(document.getElementById("haste"), true) ?? 0;
+    const celerity = validateSwingInput(document.getElementById("celerity"), true) ?? 0;
+
+    if (mhWeaponSpeed == null) return;
+
+    let speed = calculateSwingSpeed(mhWeaponSpeed, quickness, toa, haste, celerity);
+    const ohSpeed = ohWeaponSpeed != null ? calculateSwingSpeed(ohWeaponSpeed, quickness, toa, haste, celerity) : null;
+    if (ohSpeed != null) {
+      speed = Math.round((speed + ohSpeed) / 2 * 100) / 100;
+    }
+
+    resultText.textContent = speed + "s";
+    if (speed < 1.5) {
+      disclaimerText.textContent = "1.5s is the cap swing speed.";
+      disclaimerText.classList.add("font-semibold", "text-amber-400");
+    } else {
+      disclaimerText.textContent = "You will swing every " + speed + " seconds.";
+      disclaimerText.classList.remove("font-semibold", "text-amber-400");
+    }
+    resultsDiv.classList.remove("hidden");
+  });
+}
+
 // Start the data loading process
 loadBossData();
 setInterval(loadBossData, 60000); // Refresh every 60 seconds
+initSwingSpeedModal();
