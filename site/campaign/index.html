@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Eden DAoC Campaign Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="icon" href="https://clipart-library.com/8300/dragon-head-drawing.png" type="image/png" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .campaign-input {
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.9375rem;
+      color: rgb(243, 244, 246);
+      background: rgb(31, 41, 55);
+      border: 1px solid rgb(55, 65, 81);
+      border-radius: 0.5rem;
+    }
+    .campaign-character-name {
+      font-size: 0.875rem;
+      padding: 0.35rem 0.6rem;
+    }
+    .campaign-panel {
+      background: linear-gradient(180deg, rgb(31, 41, 55) 0%, rgb(17, 24, 39) 100%);
+      border: 1px solid rgb(55, 65, 81);
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    }
+    .campaign-result-box {
+      background: rgba(59, 130, 246, 0.08);
+      border: 1px solid rgba(96, 165, 250, 0.2);
+      border-radius: 0.5rem;
+      padding: 0.75rem 1rem;
+    }
+    .campaign-btn-reset {
+      background-color: rgb(37, 99, 235);
+      color: rgb(255, 255, 255);
+      transition: background-color 0.15s ease;
+    }
+    .campaign-btn-reset:hover {
+      background-color: rgb(59, 130, 246);
+    }
+    .campaign-tab {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.25rem 0.75rem 1.5rem;
+      font-size: 1.125rem;
+      border-radius: 0.375rem;
+      background: rgb(55, 65, 81);
+      color: rgb(209, 213, 219);
+      border: 1px solid rgb(75, 85, 99);
+      transition: all 0.15s ease;
+    }
+    .campaign-tab:hover {
+      background: rgb(75, 85, 99);
+      color: rgb(243, 244, 246);
+    }
+    .campaign-tab.active {
+      background: rgba(59, 130, 246, 0.2);
+      border-color: rgba(96, 165, 250, 0.5);
+      color: rgb(191, 219, 254);
+    }
+    .campaign-tab-name {
+      background: none;
+      border: none;
+      color: inherit;
+      font: inherit;
+      cursor: pointer;
+      padding: 0;
+      line-height: 1;
+    }
+    .campaign-tab-add {
+      padding: 0.75rem 1.25rem;
+      font-size: 1.125rem;
+      color: rgb(156, 163, 175);
+      background: transparent;
+      border: 1px dashed rgb(75, 85, 99);
+      border-radius: 0.375rem;
+      cursor: pointer;
+    }
+    .campaign-tab-add:hover {
+      color: rgb(96, 165, 250);
+      border-color: rgb(96, 165, 250);
+    }
+    .campaign-tab-delete {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.125rem;
+      border-radius: 0.25rem;
+      color: rgb(156, 163, 175);
+      transition: color 0.15s, background 0.15s;
+    }
+    .campaign-tab-delete:hover {
+      color: rgb(248, 113, 113);
+      background: rgba(248, 113, 113, 0.15);
+    }
+    .campaign-header-link {
+      color: rgb(251, 191, 36);
+      transition: color 0.15s ease;
+      cursor: pointer;
+      background: transparent;
+    }
+    .campaign-header-link:hover {
+      color: rgb(253, 224, 71);
+    }
+    .campaign-back-arrow {
+      font-size: 0.9em;
+      line-height: 1;
+      opacity: 0.8;
+    }
+    .campaign-howto-summary::-webkit-details-marker {
+      display: none;
+    }
+    .campaign-task-highlight {
+      background-color: rgba(255, 220, 100, 0.22);
+    }
+  </style>
+</head>
+
+<body class="bg-gray-900 text-white font-sans min-h-screen">
+
+  <!-- Header -->
+  <div class="bg-gray-800">
+    <div class="flex justify-center items-center pt-4 gap-4">
+      <img src="https://cdn-icons-png.freepik.com/512/477/477110.png" alt="Left Icon" class="h-16 w-auto" />
+      <div class="text-center">
+        <h1 class="text-4xl font-bold text-blue-400">Eden DAoC Campaign Calculator</h1>
+        <p class="text-gray-400 mt-2">S3 Campaign Level Calculator</p>
+        <p class="text-sm text-gray-500 mt-0"><a href="../" class="campaign-header-link focus:outline-none no-underline font-inherit inline-flex items-center gap-1"><span class="campaign-back-arrow">←</span> Boss Timers</a></p>
+      </div>
+      <img src="https://clipart-library.com/8300/dragon-head-drawing.png" alt="Right Icon" class="h-16 w-auto" />
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-4 py-6">
+    <!-- Collapsible How to use (starts closed) -->
+    <details class="mb-6 campaign-panel group">
+      <summary class="campaign-howto-summary cursor-pointer list-none flex items-center justify-between gap-2 p-4 md:p-6 text-xl font-semibold text-white">
+        <span>How to use</span>
+        <span class="campaign-howto-chevron text-gray-400 transition-transform group-open:rotate-180">▼</span>
+      </summary>
+      <div class="px-4 pb-4 md:px-6 md:pb-6 pt-0 text-center w-full">
+        <ul class="list-disc list-inside text-gray-400 text-base md:text-lg space-y-2 w-full text-left">
+          <li>Use the <code class="bg-gray-700 px-1 rounded">/campaign</code> command in-game to view your current status for each task.</li>
+          <li>If it says you are on level 4 of a task, you have completed level 3 — enter <strong>Level 3</strong> in the calculator.</li>
+          <li>If the task does not show up in the in-game window, you likely completed the final level (usually level 10) — select the level accordingly.</li>
+          <li>A task will have a <span class="campaign-task-highlight px-1 rounded">yellow highlight</span> if completing its current level will level up your campaign.</li>
+          <li>Click the RESET button to wipe the calculator back to level 0 on all tasks.</li>
+          <li>Use tabs to track multiple characters — each character keeps its own task levels.</li>
+        </ul>
+      </div>
+    </details>
+
+    <!-- Character tabs -->
+    <div class="mb-4 flex flex-wrap items-center gap-2">
+      <div id="campaign-tabs" class="flex flex-wrap gap-2">
+        <!-- Tabs populated by campaign.js -->
+      </div>
+      <button type="button" id="campaign-tab-add" class="campaign-tab-add">+ Add character</button>
+    </div>
+
+    <!-- Main layout: tasks left, summary + rewards right -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Task table -->
+      <div class="lg:col-span-2 campaign-panel overflow-hidden">
+        <div class="p-4 border-b border-gray-700 flex flex-wrap items-center justify-between gap-3">
+          <h2 class="text-lg font-semibold text-white">Tasks</h2>
+          <div class="flex items-center gap-3">
+            <label for="campaign-character" class="text-sm text-gray-500 whitespace-nowrap">Character name:</label>
+            <input id="campaign-character" type="text" placeholder="Character name" class="campaign-input campaign-character-name max-w-[180px]" />
+            <span id="campaign-last-updated" class="text-sm text-gray-500 whitespace-nowrap"></span>
+          </div>
+        </div>
+        <div class="overflow-x-auto max-h-[70vh] overflow-y-auto">
+          <table class="w-full text-left">
+            <thead class="bg-gray-800/80 sticky top-0">
+              <tr>
+                <th class="py-2 px-3 text-gray-400 font-medium text-sm">Task name</th>
+                <th class="py-2 px-3 text-gray-400 font-medium text-sm">Level</th>
+                <th class="py-2 px-3 text-gray-400 font-medium text-sm text-right">Total XP</th>
+                <th class="py-2 px-3 text-gray-400 font-medium text-sm text-right">Next level xp</th>
+              </tr>
+            </thead>
+            <tbody id="campaign-tasks-body">
+              <!-- Populated by campaign.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Summary + Rewards -->
+      <div class="space-y-4">
+        <div class="campaign-panel p-4">
+          <h2 class="text-lg font-semibold text-white mb-4">Campaign Progress</h2>
+          <div class="space-y-3">
+            <div>
+              <p class="text-xs text-gray-500 uppercase tracking-wide">Total Points</p>
+              <p id="campaign-total-points" class="text-xl font-semibold text-blue-400">0</p>
+            </div>
+            <div>
+              <p class="text-xs text-gray-500 uppercase tracking-wide">Campaign level</p>
+              <p id="campaign-level" class="text-xl font-semibold text-blue-400">Level 0</p>
+            </div>
+            <div>
+              <p class="text-xs text-gray-500 uppercase tracking-wide">Next level in</p>
+              <p id="campaign-next-in" class="text-xl font-semibold text-blue-400">100</p>
+            </div>
+          </div>
+          <button type="button" id="campaign-reset" class="campaign-btn-reset mt-4 w-full rounded-lg px-4 py-2.5 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800">
+            RESET
+          </button>
+        </div>
+
+        <div class="campaign-panel p-4">
+          <h2 class="text-lg font-semibold text-white mb-3">Expected reward</h2>
+          <div id="campaign-rewards" class="campaign-result-box space-y-1 min-h-[200px]">
+            <!-- Populated by campaign.js -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Release Notes -->
+    <div class="mt-8 campaign-panel p-4">
+      <h2 class="text-lg font-semibold text-white mb-3">Release Notes</h2>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left">
+          <thead>
+            <tr class="border-b border-gray-600">
+              <th class="py-2 px-3 text-gray-400 font-medium">Version</th>
+              <th class="py-2 px-3 text-gray-400 font-medium">Date</th>
+              <th class="py-2 px-3 text-gray-400 font-medium">Notes</th>
+            </tr>
+          </thead>
+          <tbody class="text-gray-300">
+            <tr class="border-b border-gray-700"><td class="py-2 px-3">BETA</td><td class="py-2 px-3">2025-04-15</td><td class="py-2 px-3">Proof of concept, fine tuning initial logic, beginning of data acquisition to understand logic behind rewards and campaign levels.</td></tr>
+            <tr class="border-b border-gray-700"><td class="py-2 px-3">V1.0</td><td class="py-2 px-3">2025-05-10</td><td class="py-2 px-3">Added drop down menus for each campaign, further fine tuning of campaign rewards, initial estimations off each campaign levels.</td></tr>
+            <tr class="border-b border-gray-700"><td class="py-2 px-3">V1.1</td><td class="py-2 px-3">2025-05-16</td><td class="py-2 px-3">Incorporated Geolux's campaign level/reward banner below the calculator to give an overall cleaner look, added a credit section below, final tweaks to each campaign levels and quest rewards. Added "Next level in:" section.</td></tr>
+            <tr class="border-b border-gray-700"><td class="py-2 px-3">V1.2</td><td class="py-2 px-3">2025-05-20</td><td class="py-2 px-3">Added a reset button, added a summary of expected rewards, added a logic to have rows turn yellow if they could help you reach the next level. Made column C visible (Total XP per objective)</td></tr>
+            <tr class="border-b border-gray-700"><td class="py-2 px-3">V1.3</td><td class="py-2 px-3">2025-07-28</td><td class="py-2 px-3">Added the three new campaign missions, added a version tag (Cell I1)</td></tr>
+            <tr class="border-b border-gray-700"><td class="py-2 px-3">V1.4</td><td class="py-2 px-3">2025-09-13</td><td class="py-2 px-3">As per Ebenezer's insights, Small Fair Fight can go above level 10 so moving it on the same pattern as Player Kills to reach level 15. Applied the same logic to Large Fair Fight objective. Reward beyond level 13 is unlikely to be accurate. Release notes section now available to the public!</td></tr>
+            <tr class="border-b border-gray-700"><td class="py-2 px-3">V1.5</td><td class="py-2 px-3">2025-10-22</td><td class="py-2 px-3">Added the two campaign missions related to PVP Events. (Win+Participate)</td></tr>
+            <tr class="border-b border-gray-700"><td class="py-2 px-3">V1.5A</td><td class="py-2 px-3">2025-10-31</td><td class="py-2 px-3">Improved Barrel of Combined Regeneration added to Campaign level 10 rewards.</td></tr>
+            <tr class="border-b border-gray-700"><td class="py-2 px-3 font-medium text-blue-400">V1.6</td><td class="py-2 px-3">2026-01-16</td><td class="py-2 px-3">Added character name to the calculator page, which updates the tab name. Also whenever a task level is modified, a timestamp is written in G1 to allow better tracking on when you last updated the file. This gets blanked when clicking on reset button. Added instructions.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Credits -->
+    <div class="mt-8 pt-6 border-t border-gray-700 text-center">
+      <p class="text-gray-400 text-xs uppercase tracking-wider mb-2">Credits</p>
+      <p class="text-gray-500 text-sm leading-relaxed">
+        Created by <span class="text-gray-300">Keltar</span> · Stolen & reposted by <span class="text-gray-300">Frick</span>
+      </p>
+      <p class="text-gray-500 text-xs mt-1.5">Special thanks to Acorny/Romaine, Boogie, Geolux, Keltar, Nadiix, Patchnotes</p>
+      <p class="text-gray-500 text-xs mt-2 italic">Feedback? Contact Keltar on Discord: <span class="text-blue-400 not-italic">keltarmh</span></p>
+    </div>
+  </div>
+
+  <script src="../campaign.js"></script>
+</body>
+
+</html>

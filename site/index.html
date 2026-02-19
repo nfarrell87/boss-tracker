@@ -36,16 +36,16 @@
       color: rgb(253, 224, 71);
     }
     .boss-card {
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35), 0 2px 4px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 0, 0, 0.25);
     }
     .boss-status-up {
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35), 0 2px 4px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(74, 222, 128, 0.25), 0 0 24px rgba(74, 222, 128, 0.2), 0 0 48px rgba(74, 222, 128, 0.1) !important;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 0, 0, 0.25), 0 0 4px rgba(74, 222, 128, 0.35), 0 0 8px rgba(74, 222, 128, 0.12) !important;
     }
     .boss-status-window {
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35), 0 2px 4px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(250, 204, 21, 0.25), 0 0 24px rgba(250, 204, 21, 0.2), 0 0 48px rgba(250, 204, 21, 0.1) !important;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 0, 0, 0.25), 0 0 4px rgba(250, 204, 21, 0.35), 0 0 8px rgba(250, 204, 21, 0.12) !important;
     }
     .boss-status-down {
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35), 0 2px 4px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(248, 113, 113, 0.25), 0 0 24px rgba(248, 113, 113, 0.2), 0 0 48px rgba(248, 113, 113, 0.1) !important;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 0, 0, 0.25), 0 0 4px rgba(255, 100, 100, 0.35), 0 0 8px rgba(255, 100, 100, 0.12) !important;
     }
     /* Modal: custom inputs */
     .swing-input {
@@ -217,7 +217,7 @@
       <div class="text-center">
         <h1 class="text-4xl font-bold text-blue-400">Eden DAoC Boss Spawn Timers</h1>
         <p class="text-gray-400 mt-2">Live updates from Discord kill feed, made by Frick</p>
-        <p class="text-sm text-gray-500 mt-0"><button type="button" id="swing-speed-btn" class="focus:outline-none bg-transparent border-0 cursor-pointer p-0 font-inherit">Swing Speed</button> | <button type="button" id="buffs-cap-btn" class="focus:outline-none bg-transparent border-0 cursor-pointer p-0 font-inherit">Buff Caps</button> | <a href="campaign.html" class="bonus-math-link focus:outline-none bg-transparent cursor-pointer no-underline font-inherit">Campaign Calculator</a></p>
+        <p class="text-sm text-gray-500 mt-0"><button type="button" id="swing-speed-btn" class="focus:outline-none bg-transparent border-0 cursor-pointer p-0 font-inherit">Swing Speed</button> | <button type="button" id="buffs-cap-btn" class="focus:outline-none bg-transparent border-0 cursor-pointer p-0 font-inherit">Buff Caps</button> | <a href="campaign/" class="bonus-math-link focus:outline-none bg-transparent cursor-pointer no-underline font-inherit">Campaign Calculator</a></p>
         <p class="text-sm text-gray-400 mt-0">email: frick@wtfrickisup.com</p>
       </div>
       <img src="https://clipart-library.com/8300/dragon-head-drawing.png" alt="Right Icon" class="h-16 w-auto" />
@@ -336,15 +336,8 @@
         <div class="mb-6">
           <label class="block text-sm font-medium text-gray-300 mb-3">Realm / Class</label>
           <div id="buffs-class-wrap" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <label class="realm-radio-card realm-midgard selected" data-realm="midgard">
-              <input type="radio" name="buffs-class" value="midgard" checked class="sr-only" />
-              <span class="realm-dot" aria-hidden="true"></span>
-              <div class="font-semibold" style="color: rgb(70, 164, 254);">Midgard</div>
-              <div class="text-xs text-gray-500 mt-0.5">(Augmentation)</div>
-              <div class="text-xs text-gray-400 mt-1">Healer / Shaman</div>
-            </label>
-            <label class="realm-radio-card realm-albion" data-realm="albion">
-              <input type="radio" name="buffs-class" value="albion" class="sr-only" />
+            <label class="realm-radio-card realm-albion selected" data-realm="albion">
+              <input type="radio" name="buffs-class" value="albion" checked class="sr-only" />
               <span class="realm-dot" aria-hidden="true"></span>
               <div class="font-semibold" style="color: rgb(249, 102, 105);">Albion</div>
               <div class="text-xs text-gray-500 mt-0.5">(Enhancement)</div>
@@ -356,6 +349,13 @@
               <div class="font-semibold" style="color: rgb(68, 213, 108);">Hibernia</div>
               <div class="text-xs text-gray-500 mt-0.5">(Nurture)</div>
               <div class="text-xs text-gray-400 mt-1">Druid / Warden / Bard</div>
+            </label>
+            <label class="realm-radio-card realm-midgard" data-realm="midgard">
+              <input type="radio" name="buffs-class" value="midgard" class="sr-only" />
+              <span class="realm-dot" aria-hidden="true"></span>
+              <div class="font-semibold" style="color: rgb(70, 164, 254);">Midgard</div>
+              <div class="text-xs text-gray-500 mt-0.5">(Augmentation)</div>
+              <div class="text-xs text-gray-400 mt-1">Healer / Shaman</div>
             </label>
           </div>
         </div>
@@ -519,6 +519,16 @@
   <!-- Boss Cards Section -->
   <div id="boss-container" class="flex flex-wrap justify-center gap-6 p-10 bg-gray-900">
     <!-- Boss cards will be dynamically added here -->
+  </div>
+
+  <!-- Credits -->
+  <div class="pb-10 pt-6 border-t border-gray-800 text-center">
+    <p class="text-gray-400 text-xs uppercase tracking-wider mb-2">Credits</p>
+    <p class="text-gray-500 text-sm leading-relaxed">
+      Created by <span class="text-gray-300">Keltar</span> · Stolen & reposted by <span class="text-gray-300">Frick</span>
+    </p>
+    <p class="text-gray-500 text-xs mt-1.5">Special thanks to Acorny/Romaine, Boogie, Geolux, Keltar, Nadiix, Patchnotes</p>
+    <p class="text-gray-500 text-xs mt-2 italic">Feedback? Contact Keltar on Discord: <span class="text-blue-400 not-italic">keltarmh</span></p>
   </div>
 
   <!-- Your script -->
