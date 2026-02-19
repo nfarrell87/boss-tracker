@@ -27,9 +27,9 @@ const bossCategories = {
     "Kjorlakath": { respawnTime: 30, alias: "Dragon of Midgard" },
   },
   "MOH Bosses": {
+    "Green Knight": { respawnTime: 30, alias: "Forest Sauvage" },
     "Evern": { respawnTime: 30, alias: "Breifine" },
     "Glacier Giant": { respawnTime: 30, alias: "Odin's Gate" },
-    "Green Knight": { respawnTime: 30, alias: "Forest Sauvage" },
   },
   "SI Epic Dungeon": {
     "Apocalypse": { respawnTime: 360, alias: "Caer Sidi" },
