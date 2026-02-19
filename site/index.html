@@ -28,11 +28,11 @@
       background-repeat: no-repeat;
       height: 300px;
     }
-    #swing-speed-btn {
+    #swing-speed-btn, #buffs-cap-btn {
       color: rgb(156, 163, 175);
       transition: color 0.15s ease;
     }
-    #swing-speed-btn:hover {
+    #swing-speed-btn:hover, #buffs-cap-btn:hover {
       color: rgb(209, 213, 219);
     }
     /* Modal: custom inputs */
@@ -68,6 +68,9 @@
       border-radius: 0.5rem;
       padding: 0.75rem 1rem;
     }
+    .buffs-result-box {
+      padding: 1rem 1.25rem;
+    }
     .swing-btn-calc {
       background-color: rgb(37, 99, 235) !important;
       color: rgb(255, 255, 255) !important;
@@ -95,6 +98,57 @@
       padding: 0.5rem 0.75rem;
       overflow-x: auto;
     }
+    .realm-glow-midgard { box-shadow: 0 0 0 1px rgba(70, 164, 254, 0.4), 0 0 12px rgba(70, 164, 254, 0.25); }
+    .realm-glow-albion { box-shadow: 0 0 0 1px rgba(249, 102, 105, 0.4), 0 0 12px rgba(249, 102, 105, 0.25); }
+    .realm-glow-hibernia { box-shadow: 0 0 0 1px rgba(68, 213, 108, 0.4), 0 0 12px rgba(68, 213, 108, 0.25); }
+    /* Realm radio cards */
+    .realm-radio-card {
+      position: relative;
+      cursor: pointer;
+      border-radius: 0.5rem;
+      border: 2px solid transparent;
+      padding: 0.875rem 1rem;
+      transition: all 0.2s ease;
+      background: rgb(31, 41, 55);
+      overflow: hidden;
+    }
+    .realm-radio-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    .realm-radio-card.realm-midgard { border-color: rgba(70, 164, 254, 0.35); }
+    .realm-radio-card.realm-midgard::before { background: linear-gradient(135deg, rgba(70, 164, 254, 0.12) 0%, transparent 60%); }
+    .realm-radio-card.realm-albion { border-color: rgba(249, 102, 105, 0.35); }
+    .realm-radio-card.realm-albion::before { background: linear-gradient(135deg, rgba(249, 102, 105, 0.12) 0%, transparent 60%); }
+    .realm-radio-card.realm-hibernia { border-color: rgba(68, 213, 108, 0.35); }
+    .realm-radio-card.realm-hibernia::before { background: linear-gradient(135deg, rgba(68, 213, 108, 0.12) 0%, transparent 60%); }
+    .realm-radio-card:hover { transform: translateY(-1px); }
+    .realm-radio-card.realm-midgard:hover { box-shadow: 0 0 0 1px rgba(70, 164, 254, 0.5), 0 0 16px rgba(70, 164, 254, 0.2); }
+    .realm-radio-card.realm-albion:hover { box-shadow: 0 0 0 1px rgba(249, 102, 105, 0.5), 0 0 16px rgba(249, 102, 105, 0.2); }
+    .realm-radio-card.realm-hibernia:hover { box-shadow: 0 0 0 1px rgba(68, 213, 108, 0.5), 0 0 16px rgba(68, 213, 108, 0.2); }
+    .realm-radio-card.realm-midgard.selected { box-shadow: 0 0 0 2px rgba(70, 164, 254, 0.4), 0 0 20px rgba(70, 164, 254, 0.35); border-color: rgba(70, 164, 254, 0.6); }
+    .realm-radio-card.realm-midgard.selected::before { opacity: 1; }
+    .realm-radio-card.realm-albion.selected { box-shadow: 0 0 0 2px rgba(249, 102, 105, 0.4), 0 0 20px rgba(249, 102, 105, 0.35); border-color: rgba(249, 102, 105, 0.6); }
+    .realm-radio-card.realm-albion.selected::before { opacity: 1; }
+    .realm-radio-card.realm-hibernia.selected { box-shadow: 0 0 0 2px rgba(68, 213, 108, 0.4), 0 0 20px rgba(68, 213, 108, 0.35); border-color: rgba(68, 213, 108, 0.6); }
+    .realm-radio-card.realm-hibernia.selected::before { opacity: 1; }
+    .realm-radio-card .realm-dot {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      width: 0.5rem;
+      height: 0.5rem;
+      border-radius: 50%;
+      opacity: 0;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .realm-radio-card.realm-midgard .realm-dot { background: rgb(70, 164, 254); }
+    .realm-radio-card.realm-albion .realm-dot { background: rgb(249, 102, 105); }
+    .realm-radio-card.realm-hibernia .realm-dot { background: rgb(68, 213, 108); }
+    .realm-radio-card.selected .realm-dot { opacity: 1; transform: scale(1.2); }
   </style>
 </head>
 
@@ -112,7 +166,7 @@
         <h1 class="text-4xl font-bold text-blue-400">Eden DAoC Boss Spawn Timers</h1>
         <p class="text-gray-400 mt-2">Live updates from Discord kill feed, made by Frick</p>
         <p class="text-sm text-gray-400 mt-0">email: frick@wtfrickisup.com</p>
-        <p class="text-sm text-gray-500 mt-0">...and a <button type="button" id="swing-speed-btn" class="focus:outline-none bg-transparent border-0 cursor-pointer p-0 font-inherit">Swing Speed Calculator</button></p>
+        <p class="text-sm text-gray-500 mt-0">...and a <button type="button" id="swing-speed-btn" class="focus:outline-none bg-transparent border-0 cursor-pointer p-0 font-inherit">Swing Speed Calculator</button> and a <button type="button" id="buffs-cap-btn" class="focus:outline-none bg-transparent border-0 cursor-pointer p-0 font-inherit">Buffs Cap Calculator</button></p>
       </div>
 
       <!-- Right Image -->
@@ -209,6 +263,200 @@
         <div class="mt-4">
           <button type="button" id="swing-speed-info-close-btn" class="swing-btn-close rounded-lg px-4 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-colors">Close</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Buffs Cap Calculator Modal -->
+  <div id="buffs-cap-modal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-hidden="true">
+    <div id="buffs-cap-backdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm" aria-hidden="true"></div>
+    <div class="relative flex min-h-min w-full items-start justify-center p-4 py-8">
+      <div class="swing-modal-panel relative rounded-xl p-6 text-gray-200 shrink-0 overflow-y-auto max-h-[85vh]" style="width: 80vw; max-width: 900px;">
+        <div class="relative mb-4">
+          <div class="flex flex-col items-center text-center">
+            <h3 class="text-2xl font-semibold text-white">Buffs Cap Calculator</h3>
+            <p class="text-sm text-gray-400 mt-2">Base buffs (DEX, STR, CON) cap at <strong class="text-amber-400">62</strong>.<br>Spec buffs (S/C, D/Q, Acuity) cap at <strong class="text-amber-400">93</strong>.<br>Based on TOA bonus, natural spec, and items/RR.</p>
+          </div>
+          <button type="button" id="buffs-cap-close" class="absolute top-0 right-0 text-gray-400 hover:text-white focus:outline-none text-2xl leading-none w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-600/50 transition-colors" aria-label="Close">&times;</button>
+        </div>
+
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-gray-300 mb-3">Realm / Class</label>
+          <div id="buffs-class-wrap" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <label class="realm-radio-card realm-midgard selected" data-realm="midgard">
+              <input type="radio" name="buffs-class" value="midgard" checked class="sr-only" />
+              <span class="realm-dot" aria-hidden="true"></span>
+              <div class="font-semibold" style="color: rgb(70, 164, 254);">Midgard</div>
+              <div class="text-xs text-gray-500 mt-0.5">(Augmentation)</div>
+              <div class="text-xs text-gray-400 mt-1">Healer / Shaman</div>
+            </label>
+            <label class="realm-radio-card realm-albion" data-realm="albion">
+              <input type="radio" name="buffs-class" value="albion" class="sr-only" />
+              <span class="realm-dot" aria-hidden="true"></span>
+              <div class="font-semibold" style="color: rgb(249, 102, 105);">Albion</div>
+              <div class="text-xs text-gray-500 mt-0.5">(Enhancement)</div>
+              <div class="text-xs text-gray-400 mt-1">Friar / Cleric / Heretic</div>
+            </label>
+            <label class="realm-radio-card realm-hibernia" data-realm="hibernia">
+              <input type="radio" name="buffs-class" value="hibernia" class="sr-only" />
+              <span class="realm-dot" aria-hidden="true"></span>
+              <div class="font-semibold" style="color: rgb(68, 213, 108);">Hibernia</div>
+              <div class="text-xs text-gray-500 mt-0.5">(Nurture)</div>
+              <div class="text-xs text-gray-400 mt-1">Druid / Warden / Bard</div>
+            </label>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
+          <div>
+            <label for="buffs-toa" class="block text-sm font-medium text-gray-300 mb-1">TOA Buff Bonus (%)</label>
+            <input id="buffs-toa" type="number" value="25" step="1" class="swing-input" />
+          </div>
+          <div>
+            <label for="buffs-aug" id="buffs-aug-label" class="block text-sm font-medium text-gray-300 mb-1">Natural Aug Spec</label>
+            <input id="buffs-aug" type="number" value="6" step="1" class="swing-input" />
+          </div>
+          <div>
+            <label for="buffs-items" class="block text-sm font-medium text-gray-300 mb-1">+ from Items and RR</label>
+            <input id="buffs-items" type="number" value="15" step="1" class="swing-input" />
+          </div>
+        </div>
+        <div id="buffs-cap-results" class="flex flex-col items-center gap-4 w-full">
+          <div class="swing-result-box buffs-result-box w-full text-center">
+            <p class="text-sm font-medium text-gray-300 mb-3">Actual buff value</p>
+            <div class="grid grid-cols-8 gap-2 text-sm text-center">
+              <span class="text-gray-500"></span><span class="text-gray-500">DEX</span><span class="text-gray-500">STR</span><span class="text-gray-500">CON</span><span class="text-gray-500">AF</span><span class="text-gray-500">S/C</span><span class="text-gray-500">D/Q</span><span class="text-gray-500">Acuity</span>
+              <span class="text-gray-500">Highest</span>
+              <span id="buffs-out-dex-h" class="font-medium" style="color: #CC6BA8;"></span>
+              <span id="buffs-out-str-h" class="font-medium" style="color: #CC6BA8;"></span>
+              <span id="buffs-out-con-h" class="font-medium" style="color: #CC6BA8;"></span>
+              <span id="buffs-out-af-h" class="font-medium" style="color: #CC6BA8;"></span>
+              <span id="buffs-spec-strcon-h" class="font-medium" style="color: #CC6BA8;"></span>
+              <span id="buffs-spec-dexqui-h" class="font-medium" style="color: #CC6BA8;"></span>
+              <span id="buffs-spec-acuity-h" class="font-medium" style="color: #CC6BA8;"></span>
+              <span class="text-gray-500">One down</span>
+              <span id="buffs-out-dex-l" class="font-medium" style="color: #C4A035;"></span>
+              <span id="buffs-out-str-l" class="font-medium" style="color: #C4A035;"></span>
+              <span id="buffs-out-con-l" class="font-medium" style="color: #C4A035;"></span>
+              <span id="buffs-out-af-l" class="font-medium" style="color: #C4A035;"></span>
+              <span id="buffs-spec-strcon-l" class="font-medium" style="color: #C4A035;"></span>
+              <span id="buffs-spec-dexqui-l" class="font-medium" style="color: #C4A035;"></span>
+              <span id="buffs-spec-acuity-l" class="font-medium" style="color: #C4A035;"></span>
+            </div>
+          </div>
+          <div class="swing-result-box buffs-result-box w-full text-center">
+            <p class="text-sm font-medium text-gray-300 mb-3">Missing from cap (62 / 93)</p>
+            <div class="grid grid-cols-8 gap-2 text-sm text-center">
+              <span class="text-gray-500"></span><span class="text-gray-500">DEX</span><span class="text-gray-500">STR</span><span class="text-gray-500">CON</span><span class="text-gray-500">AF</span><span class="text-gray-500">S/C</span><span class="text-gray-500">D/Q</span><span class="text-gray-500">Acuity</span>
+              <span class="text-gray-500">Highest</span>
+              <span id="buffs-miss-dex-h" class="font-medium" style="color: #CC6BA8;"></span>
+              <span id="buffs-miss-str-h" class="font-medium" style="color: #CC6BA8;"></span>
+              <span id="buffs-miss-con-h" class="font-medium" style="color: #CC6BA8;"></span>
+              <span id="buffs-miss-af-h" class="text-gray-500">—</span>
+              <span id="buffs-spec-strcon-miss-h" class="font-medium" style="color: #CC6BA8;"></span>
+              <span id="buffs-spec-dexqui-miss-h" class="font-medium" style="color: #CC6BA8;"></span>
+              <span id="buffs-spec-acuity-miss-h" class="font-medium" style="color: #CC6BA8;"></span>
+              <span class="text-gray-500">One down</span>
+              <span id="buffs-miss-dex-l" class="font-medium" style="color: #C4A035;"></span>
+              <span id="buffs-miss-str-l" class="font-medium" style="color: #C4A035;"></span>
+              <span id="buffs-miss-con-l" class="font-medium" style="color: #C4A035;"></span>
+              <span id="buffs-miss-af-l" class="text-gray-500">—</span>
+              <span id="buffs-spec-strcon-miss-l" class="font-medium" style="color: #C4A035;"></span>
+              <span id="buffs-spec-dexqui-miss-l" class="font-medium" style="color: #C4A035;"></span>
+              <span id="buffs-spec-acuity-miss-l" class="font-medium" style="color: #C4A035;"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6 pt-2 flex justify-between items-center">
+          <button type="button" id="buffs-cap-close-btn" class="swing-btn-close rounded-lg px-5 py-2.5 font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-colors">Close</button>
+          <button type="button" id="buffs-cap-info-btn" class="text-sm text-blue-400 hover:text-blue-300 focus:outline-none underline">How this works</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Buffs Cap How This Works Modal -->
+  <div id="buffs-cap-info-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4" aria-hidden="true">
+    <div id="buffs-cap-info-backdrop" class="absolute inset-0 bg-black/70 backdrop-blur-sm" aria-hidden="true"></div>
+    <div class="relative flex min-h-full w-full items-center justify-center p-4">
+      <div class="swing-modal-panel relative rounded-xl p-6 text-gray-200 max-h-[90vh] overflow-y-auto" style="width: 60vw; max-width: 700px; flex-shrink: 0;">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-lg font-semibold text-white">How the Buffs Cap Calculator works</h3>
+          <button type="button" id="buffs-cap-info-close" class="text-gray-400 hover:text-white focus:outline-none text-2xl leading-none w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-600/50 transition-colors" aria-label="Close">&times;</button>
+        </div>
+
+        <div class="space-y-4 text-sm text-gray-300">
+          <p><strong class="text-white">What it does:</strong> Estimates how much DEX, STR, CON, AF, and spec buffs (S/C, D/Q, Acuity) your buffs actually give, based on your natural spec, TOA bonus, and items.</p>
+
+          <p><strong class="text-amber-400">The cap:</strong> DEX, STR, and CON from base buffs are capped at <strong>62</strong>. Spec buffs (S/C, D/Q, Acuity) are capped at <strong>93</strong>. No matter how high your buffs are, you can’t go past those caps. AF cap is determined by gear, not spells.</p>
+
+          <p><strong class="text-white">Your inputs:</strong></p>
+          <ul class="list-disc list-inside space-y-1 text-gray-400 ml-2">
+            <li><strong class="text-gray-300">TOA Buff Bonus</strong> — Your % bonus from items.</li>
+            <li><strong class="text-gray-300">Natural spec</strong> — Points you’ve put in the buff line</li>
+            <li><strong class="text-gray-300">+ from items and RR</strong> — From gear, RA, RR, etc.</li>
+          </ul>
+          <p class="text-gray-400">Higher spec + more TOA + more items = bigger buffs, up to the cap.</p>
+
+          <p><strong class="text-white">Base values by realm:</strong> Each realm’s buff line has different spell levels and delve values. <strong class="text-gray-300">Spell level</strong> = the spell's rank in the spec line (affects how much your composite spec scales the result). <strong class="text-gray-300">Delve</strong> = the base value from the spell tooltip (e.g. "Increases STR by 50"). The tables below show the exact values used for each realm.</p>
+        </div>
+
+        <p class="text-sm font-medium text-gray-300 mt-4 mb-2">Spell/delve values by realm</p>
+
+        <p class="text-xs font-medium text-gray-400 mt-4 mb-2">Midgard (Aug)</p>
+        <div class="swing-result-box buffs-result-box w-full text-center mb-4">
+          <p class="text-sm font-medium text-gray-300 mb-3">Spell/delve</p>
+          <div class="grid grid-cols-8 gap-2 text-sm text-center">
+            <span class="text-gray-500"></span><span class="text-gray-500">DEX</span><span class="text-gray-500">STR</span><span class="text-gray-500">CON</span><span class="text-gray-500">AF</span><span class="text-gray-500">S/C</span><span class="text-gray-500">D/Q</span><span class="text-gray-500">Acuity</span>
+            <span class="text-gray-500">Highest</span>
+            <span class="text-gray-300">48/48</span><span class="text-gray-300">50/50</span><span class="text-gray-300">47/47</span><span class="text-gray-300">42/52</span><span class="text-gray-300">46/69</span><span class="text-gray-300">47/70</span><span class="text-gray-300">42/52</span>
+            <span class="text-gray-500">One down</span>
+            <span class="text-gray-300">37/39</span><span class="text-gray-300">43/44</span><span class="text-gray-300">38/40</span><span class="text-gray-300">31/41</span><span class="text-gray-300">36/57</span><span class="text-gray-300">37/60</span><span class="text-gray-300">31/41</span>
+          </div>
+        </div>
+
+        <p class="text-xs font-medium text-gray-400 mt-4 mb-2">Albion (Enhancement)</p>
+        <div class="swing-result-box buffs-result-box w-full text-center mb-4">
+          <p class="text-sm font-medium text-gray-300 mb-3">Spell/delve</p>
+          <div class="grid grid-cols-8 gap-2 text-sm text-center">
+            <span class="text-gray-500"></span><span class="text-gray-500">DEX</span><span class="text-gray-500">STR</span><span class="text-gray-500">CON</span><span class="text-gray-500">AF</span><span class="text-gray-500">S/C</span><span class="text-gray-500">D/Q</span><span class="text-gray-500">Acuity</span>
+            <span class="text-gray-500">Highest</span>
+            <span class="text-gray-300">48/48</span><span class="text-gray-300">50/50</span><span class="text-gray-300">43/44</span><span class="text-gray-300">42/52</span><span class="text-gray-300">46/69</span><span class="text-gray-300">50/75</span><span class="text-gray-300">42/52</span>
+            <span class="text-gray-500">One down</span>
+            <span class="text-gray-300">38/40</span><span class="text-gray-300">41/42</span><span class="text-gray-300">33/36</span><span class="text-gray-300">31/41</span><span class="text-gray-300">35/57</span><span class="text-gray-300">40/63</span><span class="text-gray-300">31/41</span>
+          </div>
+        </div>
+
+        <p class="text-xs font-medium text-gray-400 mt-4 mb-2">Hibernia (Nurture)</p>
+        <div class="swing-result-box buffs-result-box w-full text-center mb-4">
+          <p class="text-sm font-medium text-gray-300 mb-3">Spell/delve</p>
+          <div class="grid grid-cols-8 gap-2 text-sm text-center">
+            <span class="text-gray-500"></span><span class="text-gray-500">DEX</span><span class="text-gray-500">STR</span><span class="text-gray-500">CON</span><span class="text-gray-500">AF</span><span class="text-gray-500">S/C</span><span class="text-gray-500">D/Q</span><span class="text-gray-500">Acuity</span>
+            <span class="text-gray-500">Highest</span>
+            <span class="text-gray-300">48/48</span><span class="text-gray-300">50/50</span><span class="text-gray-300">43/44</span><span class="text-gray-300">45/55</span><span class="text-gray-300">44/67</span><span class="text-gray-300">49/73</span><span class="text-gray-300">42/52</span>
+            <span class="text-gray-500">One down</span>
+            <span class="text-gray-300">38/40</span><span class="text-gray-300">41/42</span><span class="text-gray-300">33/36</span><span class="text-gray-300">32/42</span><span class="text-gray-300">34/55</span><span class="text-gray-300">39/61</span><span class="text-gray-300">31/41</span>
+          </div>
+        </div>
+
+        <p class="text-xs text-gray-500 mb-4"><strong class="text-gray-400">Missing from cap</strong> = cap − your actual buff value. Base buffs cap 62; spec buffs cap 93. AF shows "—" because gear determines the AF cap, not spells.</p>
+
+        <p class="text-sm font-medium text-gray-300 mt-6 mb-2">The formula</p>
+        <div class="swing-formula-code mb-3 text-sm">
+          <p class="text-gray-400 mb-3"><strong>Base buffs (cap 62):</strong></p>
+          <p class="font-mono text-gray-300 mb-1">effectiveness = 0.75 + (specLevel − 1) × 0.5 / (spellLevel − 1)</p>
+          <p class="text-xs text-gray-500 mb-2">Min/max 0.75–1.25. The −1 terms reflect spell levels starting at 1, not 0. Composite (natural spec + items/RR) scales the buff.</p>
+          <p class="font-mono text-gray-300 mb-1">ToA bonus is applied after</p>
+          <p class="text-xs text-gray-500 mb-2">result = delve × effectiveness × (1 + toaDecimal). ToA capped at 1.25 (25%).</p>
+          <p class="font-mono text-gray-300 mb-1">actual = floor(min(max(raw, 0.75 × delve), cap))</p>
+          <p class="text-xs text-gray-500 mb-3">Floor at 75% of delve, apply stat cap (62), round down.</p>
+          <p class="text-gray-400 mb-3"><strong>Spec buffs (cap 93):</strong></p>
+          <p class="text-xs text-gray-500 mb-2">Same formula as base. You don't get these spells until your natural spec reaches the spell level—values show N/A until then. Once you have the spell, the formula uses composite (natural spec + items/RR).</p>
+          <p class="text-gray-400 mt-2 text-xs"><strong>Where:</strong> specLevel = natural spec + items/RR (composite). toaDecimal = TOA % ÷ 100.</p>
+        </div>
+
+        <button type="button" id="buffs-cap-info-close-btn" class="swing-btn-close rounded-lg px-4 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-colors">Close</button>
       </div>
     </div>
   </div>

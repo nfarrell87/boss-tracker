@@ -737,7 +737,188 @@ function initSwingSpeedModal() {
   });
 }
 
+// --- Buffs Cap Calculator ---
+// Buff formula per Laekker (Eden dev, 3/2023): effectiveness = 0.75 + specLevel*0.5/spellLevel (capped 0.75-1.25), ToA applied after. -1 terms: spell levels start at 1, not 0.
+function calcBuffsActual(delveValue, spellLevel, compositeSpec, toaDecimal, cap) {
+  if (!delveValue || !spellLevel || spellLevel <= 1) return null;
+  const effectiveness = Math.min(Math.max(0.75 + (compositeSpec - 1) * 0.5 / (spellLevel - 1), 0.75), 1.25);
+  const toaFactor = Math.min(1 + toaDecimal, 1.25);
+  let val = delveValue * effectiveness * toaFactor;
+  val = Math.max(val, 0.75 * delveValue);
+  val = Math.min(val, cap);
+  return Math.floor(val);
+}
+
+function initBuffsCapModal() {
+  const modal = document.getElementById("buffs-cap-modal");
+  const btnOpen = document.getElementById("buffs-cap-btn");
+  const btnClose = document.getElementById("buffs-cap-close");
+  const btnClose2 = document.getElementById("buffs-cap-close-btn");
+  const backdrop = document.getElementById("buffs-cap-backdrop");
+  const resultsDiv = document.getElementById("buffs-cap-results");
+  const inputToa = document.getElementById("buffs-toa");
+  const inputAug = document.getElementById("buffs-aug");
+  const inputItems = document.getElementById("buffs-items");
+
+  function openModal() {
+    modal.classList.remove("hidden");
+    modal.setAttribute("aria-hidden", "false");
+    runBuffsCalc();
+  }
+  function closeModal() {
+    modal.classList.add("hidden");
+    modal.setAttribute("aria-hidden", "true");
+  }
+
+  const infoModal = document.getElementById("buffs-cap-info-modal");
+  const btnInfo = document.getElementById("buffs-cap-info-btn");
+  const infoBackdrop = document.getElementById("buffs-cap-info-backdrop");
+  const infoClose = document.getElementById("buffs-cap-info-close");
+  const infoCloseBtn = document.getElementById("buffs-cap-info-close-btn");
+
+  function openInfoModal() {
+    infoModal.classList.remove("hidden");
+    infoModal.setAttribute("aria-hidden", "false");
+  }
+  function closeInfoModal() {
+    infoModal.classList.add("hidden");
+    infoModal.setAttribute("aria-hidden", "true");
+  }
+
+  btnInfo.addEventListener("click", openInfoModal);
+  infoBackdrop.addEventListener("click", closeInfoModal);
+  infoClose.addEventListener("click", closeInfoModal);
+  infoCloseBtn.addEventListener("click", closeInfoModal);
+
+  btnOpen.addEventListener("click", openModal);
+  btnClose.addEventListener("click", closeModal);
+  btnClose2.addEventListener("click", closeModal);
+  backdrop.addEventListener("click", closeModal);
+
+  // Base values by class (spell level and delve)
+  const BUFFS_BASES = {
+    midgard: {
+      spell: { dexH: 48, strH: 50, conH: 47, afH: 42, dexL: 37, strL: 43, conL: 38, afL: 31 },
+      delve: { dexH: 48, strH: 50, conH: 47, afH: 52, dexL: 39, strL: 44, conL: 40, afL: 41 },
+    },
+    albion: {
+      spell: { dexH: 48, strH: 50, conH: 43, afH: 42, dexL: 38, strL: 41, conL: 33, afL: 31 },
+      delve: { dexH: 48, strH: 50, conH: 44, afH: 52, dexL: 40, strL: 42, conL: 36, afL: 41 },
+    },
+    hibernia: {
+      spell: { dexH: 48, strH: 50, conH: 43, afH: 45, dexL: 38, strL: 41, conL: 33, afL: 32 },
+      delve: { dexH: 48, strH: 50, conH: 44, afH: 55, dexL: 40, strL: 42, conL: 36, afL: 42 },
+    },
+  };
+
+  // Spec buffs (yellow): same formula as base, cap 93. Keyed by realm.
+  const SPEC_BUFFS = {
+    midgard: {
+      strCon: { spell: { h: 46, l: 36 }, delve: { h: 69, l: 57 }, cap: 93 },
+      dexQui: { spell: { h: 47, l: 37 }, delve: { h: 70, l: 60 }, cap: 93 },
+      acuity: { spell: { h: 42, l: 31 }, delve: { h: 52, l: 41 }, cap: 93 },
+    },
+    albion: {
+      strCon: { spell: { h: 46, l: 35 }, delve: { h: 69, l: 57 }, cap: 93 },
+      dexQui: { spell: { h: 50, l: 40 }, delve: { h: 75, l: 63 }, cap: 93 },
+      acuity: { spell: { h: 42, l: 31 }, delve: { h: 52, l: 41 }, cap: 93 },
+    },
+    hibernia: {
+      strCon: { spell: { h: 44, l: 34 }, delve: { h: 67, l: 55 }, cap: 93 },
+      dexQui: { spell: { h: 49, l: 39 }, delve: { h: 73, l: 61 }, cap: 93 },
+      acuity: { spell: { h: 42, l: 31 }, delve: { h: 52, l: 41 }, cap: 93 },
+    },
+  };
+
+  const classWrap = document.getElementById("buffs-class-wrap");
+  const getSelectedRealm = () => document.querySelector('input[name="buffs-class"]:checked')?.value || "midgard";
+
+  const augLabel = document.getElementById("buffs-aug-label");
+  const SPEC_NAMES = { midgard: "Aug", albion: "Enhance", hibernia: "Nurture" };
+
+  function updateRealmGlow() {
+    const val = getSelectedRealm();
+    classWrap.querySelectorAll(".realm-radio-card").forEach((card) => {
+      card.classList.toggle("selected", card.dataset.realm === val);
+    });
+    if (augLabel) augLabel.textContent = `Natural ${SPEC_NAMES[val] || "Aug"} Spec`;
+  }
+
+  function runBuffsCalc() {
+    const toa = parseFloat(inputToa.value) || 0;
+    const aug = parseFloat(inputAug.value) || 0;
+    const items = parseFloat(inputItems.value) || 0;
+    const compositeSpec = aug + items;
+    const toaDecimal = toa / 100;
+    const sel = getSelectedRealm();
+    const bases = BUFFS_BASES[sel] || BUFFS_BASES.midgard;
+    const spell = bases.spell;
+    const delve = bases.delve;
+    const CAP = 62;
+    const AFCAP = 1e9;
+
+    const out = {
+      dexH: calcBuffsActual(delve.dexH, spell.dexH, compositeSpec, toaDecimal, CAP),
+      strH: calcBuffsActual(delve.strH, spell.strH, compositeSpec, toaDecimal, CAP),
+      conH: calcBuffsActual(delve.conH, spell.conH, compositeSpec, toaDecimal, CAP),
+      afH: calcBuffsActual(delve.afH, spell.afH, compositeSpec, toaDecimal, AFCAP),
+      dexL: calcBuffsActual(delve.dexL, spell.dexL, compositeSpec, toaDecimal, CAP),
+      strL: calcBuffsActual(delve.strL, spell.strL, compositeSpec, toaDecimal, CAP),
+      conL: calcBuffsActual(delve.conL, spell.conL, compositeSpec, toaDecimal, CAP),
+      afL: calcBuffsActual(delve.afL, spell.afL, compositeSpec, toaDecimal, AFCAP),
+    };
+
+    ["dex", "str", "con", "af"].forEach((stat) => {
+      document.getElementById(`buffs-out-${stat}-h`).textContent = out[`${stat}H`] ?? "—";
+      document.getElementById(`buffs-out-${stat}-l`).textContent = out[`${stat}L`] ?? "—";
+    });
+    document.getElementById("buffs-miss-dex-h").textContent = out.dexH != null ? CAP - out.dexH : "—";
+    document.getElementById("buffs-miss-dex-l").textContent = out.dexL != null ? CAP - out.dexL : "—";
+    document.getElementById("buffs-miss-str-h").textContent = out.strH != null ? CAP - out.strH : "—";
+    document.getElementById("buffs-miss-str-l").textContent = out.strL != null ? CAP - out.strL : "—";
+    document.getElementById("buffs-miss-con-h").textContent = out.conH != null ? CAP - out.conH : "—";
+    document.getElementById("buffs-miss-con-l").textContent = out.conL != null ? CAP - out.conL : "—";
+
+    const specBases = SPEC_BUFFS[sel];
+    if (specBases) {
+      const setSpec = (id, buff, cap) => {
+        const spellH = specBases[buff].spell.h;
+        const spellL = specBases[buff].spell.l;
+        const h = aug >= spellH ? calcBuffsActual(specBases[buff].delve.h, spellH, compositeSpec, toaDecimal, cap) : null;
+        const l = aug >= spellL ? calcBuffsActual(specBases[buff].delve.l, spellL, compositeSpec, toaDecimal, cap) : null;
+        document.getElementById(`buffs-spec-${id}-h`).textContent = h != null ? h : "N/A";
+        document.getElementById(`buffs-spec-${id}-l`).textContent = l != null ? l : "N/A";
+        document.getElementById(`buffs-spec-${id}-miss-h`).textContent = h != null ? cap - h : "N/A";
+        document.getElementById(`buffs-spec-${id}-miss-l`).textContent = l != null ? cap - l : "N/A";
+      };
+      setSpec("strcon", "strCon", 93);
+      setSpec("dexqui", "dexQui", 93);
+      setSpec("acuity", "acuity", 93);
+    } else {
+      document.getElementById("buffs-spec-strcon-h").textContent = "N/A";
+      document.getElementById("buffs-spec-strcon-l").textContent = "N/A";
+      document.getElementById("buffs-spec-strcon-miss-h").textContent = "N/A";
+      document.getElementById("buffs-spec-strcon-miss-l").textContent = "N/A";
+      document.getElementById("buffs-spec-dexqui-h").textContent = "N/A";
+      document.getElementById("buffs-spec-dexqui-l").textContent = "N/A";
+      document.getElementById("buffs-spec-dexqui-miss-h").textContent = "N/A";
+      document.getElementById("buffs-spec-dexqui-miss-l").textContent = "N/A";
+      document.getElementById("buffs-spec-acuity-h").textContent = "N/A";
+      document.getElementById("buffs-spec-acuity-l").textContent = "N/A";
+      document.getElementById("buffs-spec-acuity-miss-h").textContent = "N/A";
+      document.getElementById("buffs-spec-acuity-miss-l").textContent = "N/A";
+    }
+  }
+
+  classWrap.addEventListener("change", () => { updateRealmGlow(); runBuffsCalc(); });
+  updateRealmGlow();
+  inputToa.addEventListener("input", runBuffsCalc);
+  inputAug.addEventListener("input", runBuffsCalc);
+  inputItems.addEventListener("input", runBuffsCalc);
+}
+
 // Start the data loading process
 loadBossData();
 setInterval(loadBossData, 60000); // Refresh every 60 seconds
 initSwingSpeedModal();
+initBuffsCapModal();
