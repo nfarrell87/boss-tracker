@@ -321,7 +321,7 @@
         <div class="relative mb-4">
           <div class="flex flex-col items-center text-center">
             <h3 class="text-2xl font-semibold text-white">Buffs Cap Calculator</h3>
-            <p class="text-sm text-gray-400 mt-2">Base buffs (DEX, STR, CON) cap at <strong class="text-amber-400">62</strong>.<br>Spec buffs (S/C, D/Q, Acuity) cap at <strong class="text-amber-400">93</strong>.<br>Based on TOA bonus, natural spec, and items/RR.</p>
+            <p class="text-sm text-gray-400 mt-2">Base buffs (DEX, STR, CON) cap at <strong class="text-amber-400">62</strong>.<br>Spec buffs (S/C, D/Q, Acuity) cap at <strong class="text-amber-400">93</strong>.<br>Based on TOA bonus, natural spec, and items/RR.<br><span class="text-gray-500 text-xs">Spec buffs show N/A until your natural spec is high enough to have that spell—then values appear.</span></p>
           </div>
           <button type="button" id="buffs-cap-close" class="absolute top-0 right-0 text-gray-400 hover:text-white focus:outline-none text-2xl leading-none w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-600/50 transition-colors" aria-label="Close">&times;</button>
         </div>
@@ -437,6 +437,8 @@
 
           <p><strong class="text-amber-400">The cap:</strong> DEX, STR, and CON from base buffs are capped at <strong>62</strong>. Spec buffs (S/C, D/Q, Acuity) are capped at <strong>93</strong>. No matter how high your buffs are, you can’t go past those caps. AF cap is determined by gear, not spells.</p>
 
+          <p><strong class="text-white">Spec buffs and N/A:</strong> Spec buff columns (S/C, D/Q, Acuity) show <strong>N/A</strong> until your natural spec is high enough to have that spell. Once you reach the required spec level, the values appear and the formula applies.</p>
+
           <p><strong class="text-white">Your inputs:</strong></p>
           <ul class="list-disc list-inside space-y-1 text-gray-400 ml-2">
             <li><strong class="text-gray-300">TOA Buff Bonus</strong> — Your % bonus from items.</li>
@@ -498,7 +500,7 @@
           <p class="font-mono text-gray-300 mb-1">actual = floor(min(max(raw, 0.75 × delve), cap))</p>
           <p class="text-xs text-gray-500 mb-3">Floor at 75% of delve, apply stat cap (62), round down.</p>
           <p class="text-gray-400 mb-3"><strong>Spec buffs (cap 93):</strong></p>
-          <p class="text-xs text-gray-500 mb-2">Same formula as base. You don't get these spells until your natural spec reaches the spell level—values show N/A until then. Once you have the spell, the formula uses composite (natural spec + items/RR).</p>
+          <p class="text-xs text-gray-500 mb-2">Same formula as base. Spec buffs show N/A until your natural spec is high enough to have that spell (you must reach the spell's level in the spec line). Once you have the spell, the values appear and the formula uses composite (natural spec + items/RR).</p>
           <p class="text-gray-400 mt-2 text-xs"><strong>Where:</strong> specLevel = natural spec + items/RR (composite). toaDecimal = TOA % ÷ 100.</p>
         </div>
 
