@@ -444,9 +444,19 @@ function switchCharacter(id) {
   updateTimestampDisplay();
 }
 
+function getNextAltName() {
+  let max = 0;
+  for (const c of charactersData.characters) {
+    const m = (c.name || "").match(/^Alt #(\d+)$/i);
+    if (m) max = Math.max(max, parseInt(m[1], 10));
+  }
+  return `Alt #${max + 1}`;
+}
+
 function addCharacter() {
   saveCurrentLevels();
-  const newChar = { id: generateId(), name: "New character", levels: {}, lastUpdated: null };
+  const defaultName = getNextAltName();
+  const newChar = { id: generateId(), name: defaultName, levels: {}, lastUpdated: null };
   charactersData.characters.push(newChar);
   charactersData.activeId = newChar.id;
   saveCharacters(charactersData);
@@ -454,9 +464,9 @@ function addCharacter() {
   renderTabs();
   const characterInput = document.getElementById("campaign-character");
   if (characterInput) {
-    characterInput.value = "New character";
+    characterInput.value = defaultName;
     characterInput.focus();
-    updateTabTitle("New character");
+    updateTabTitle(defaultName);
   }
   updateTimestampDisplay();
 }
