@@ -289,6 +289,13 @@ function createBossCard(bossName, boss, history, realm = null) {
   
   // Get realm border class
   const borderClass = realm ? getRealmBorderClass(realm) : '';
+  // Get status glow class (red=down, yellow=in window, green=up)
+  let statusClass = '';
+  if (latestKill) {
+    if (isAlive) statusClass = 'boss-status-up';
+    else if (isInSpawnWindow) statusClass = 'boss-status-window';
+    else statusClass = 'boss-status-down';
+  }
 
   const historyRows = filteredHistory.length > 0
     ? filteredHistory.slice(0, 5).map((entry, i) => {
@@ -334,7 +341,7 @@ function createBossCard(bossName, boss, history, realm = null) {
   const cardId = `boss-card-${bossId}${realmSuffix}`;
 
   const bossCard = document.createElement("div");
-  bossCard.className = `bg-gray-700 text-white rounded-lg shadow p-4 ${borderClass}`;
+  bossCard.className = `boss-card bg-gray-700 text-white rounded-lg p-4 ${statusClass || ''} ${borderClass}`;
   bossCard.id = cardId;
   bossCard.setAttribute('data-boss-name', bossName);
   bossCard.setAttribute('data-realm', realm || 'all');
@@ -464,7 +471,7 @@ function createOtherBossesCard(otherBossKills) {
     : `<tr><td colspan="5" class="text-sm text-center text-gray-500 py-2">No other boss kills recorded yet</td></tr>`;
 
   const bossCard = document.createElement("div");
-  bossCard.className = `bg-gray-700 text-white rounded-lg shadow p-4`;
+  bossCard.className = `boss-card bg-gray-700 text-white rounded-lg p-4`;
   bossCard.id = `boss-card-other-bosses`;
   bossCard.setAttribute('data-boss-name', 'Other Bosses');
   bossCard.setAttribute('data-realm', 'all');

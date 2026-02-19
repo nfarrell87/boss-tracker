@@ -28,12 +28,24 @@
       background-repeat: no-repeat;
       height: 300px;
     }
-    #swing-speed-btn, #buffs-cap-btn {
-      color: rgb(156, 163, 175);
+    #swing-speed-btn, #buffs-cap-btn, .bonus-math-link {
+      color: rgb(251, 191, 36);
       transition: color 0.15s ease;
     }
-    #swing-speed-btn:hover, #buffs-cap-btn:hover {
-      color: rgb(209, 213, 219);
+    #swing-speed-btn:hover, #buffs-cap-btn:hover, .bonus-math-link:hover {
+      color: rgb(253, 224, 71);
+    }
+    .boss-card {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35), 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    .boss-status-up {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35), 0 2px 4px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(74, 222, 128, 0.25), 0 0 24px rgba(74, 222, 128, 0.2), 0 0 48px rgba(74, 222, 128, 0.1) !important;
+    }
+    .boss-status-window {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35), 0 2px 4px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(250, 204, 21, 0.25), 0 0 24px rgba(250, 204, 21, 0.2), 0 0 48px rgba(250, 204, 21, 0.1) !important;
+    }
+    .boss-status-down {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35), 0 2px 4px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(248, 113, 113, 0.25), 0 0 24px rgba(248, 113, 113, 0.2), 0 0 48px rgba(248, 113, 113, 0.1) !important;
     }
     /* Modal: custom inputs */
     .swing-input {
@@ -198,31 +210,26 @@
 
 <body class="bg-gray-900 text-white font-sans">
 
-  <!-- Header and Filters Section -->
+  <!-- Header -->
   <div class="bg-gray-800">
-    <!-- Header -->
     <div class="flex justify-center items-center pt-4 gap-4">
-      <!-- Left Image -->
       <img src="https://cdn-icons-png.freepik.com/512/477/477110.png" alt="Left Icon" class="h-16 w-auto" />
-
-      <!-- Title and Subtitle -->
       <div class="text-center">
         <h1 class="text-4xl font-bold text-blue-400">Eden DAoC Boss Spawn Timers</h1>
         <p class="text-gray-400 mt-2">Live updates from Discord kill feed, made by Frick</p>
-        <p class="text-sm text-gray-500 mt-0">bonus math: <button type="button" id="swing-speed-btn" class="focus:outline-none bg-transparent border-0 cursor-pointer p-0 font-inherit">Swing Speed</button> & <button type="button" id="buffs-cap-btn" class="focus:outline-none bg-transparent border-0 cursor-pointer p-0 font-inherit">Buff Caps</button></p>
+        <p class="text-sm text-gray-500 mt-0"><button type="button" id="swing-speed-btn" class="focus:outline-none bg-transparent border-0 cursor-pointer p-0 font-inherit">Swing Speed</button> | <button type="button" id="buffs-cap-btn" class="focus:outline-none bg-transparent border-0 cursor-pointer p-0 font-inherit">Buff Caps</button> | <a href="campaign.html" class="bonus-math-link focus:outline-none bg-transparent cursor-pointer no-underline font-inherit">Campaign Calculator</a></p>
         <p class="text-sm text-gray-400 mt-0">email: frick@wtfrickisup.com</p>
       </div>
-
-      <!-- Right Image -->
       <img src="https://clipart-library.com/8300/dragon-head-drawing.png" alt="Right Icon" class="h-16 w-auto" />
     </div>
+  </div>
 
-    <!-- Category Filters -->
-    <div id="category-filters"
-      class="flex flex-wrap justify-center gap-3 px-4 pt-4 bg-gray-800 text-white rounded-lg shadow">
+  <!-- Category Filters (pills) -->
+  <div class="bg-gray-900 pt-4">
+    <div id="category-filters" class="flex flex-wrap justify-center gap-3 px-4 text-white">
       <!-- Checkboxes will be dynamically added here -->
     </div>
-    <p class="text-xs text-center pb-2 text-gray-300">Click to show or hide categories</p>
+    <p class="text-xs text-center pb-2 pt-1 text-gray-300">Click to show or hide categories</p>
   </div>
 
   <!-- Update Info -->
