@@ -69,25 +69,22 @@ function renderCategoryFilters() {
     checkbox.type = 'checkbox';
     checkbox.id = `filter-${category}`;
     checkbox.checked = categoryVisibility[category];
-    checkbox.className = 'form-checkbox h-5 w-5 text-blue-500 rounded focus:ring focus:ring-blue-300';
-
-    checkbox.addEventListener('change', (e) => {
-      categoryVisibility[category] = e.target.checked;
-      saveCategoryVisibility();
-      renderAllBosses(currentData); // Re-render bosses
-    });
+    checkbox.className = 'sr-only';
 
     const label = document.createElement('label');
     label.htmlFor = `filter-${category}`;
-    label.className = 'text-sm text-gray-300 ml-2';
-    label.textContent = category;
+    label.className = 'filter-pill' + (categoryVisibility[category] ? ' active' : '');
+    label.appendChild(checkbox);
+    label.appendChild(document.createTextNode(category));
 
-    const wrapper = document.createElement('div');
-    wrapper.className = 'flex items-center gap-2';
-    wrapper.appendChild(checkbox);
-    wrapper.appendChild(label);
+    checkbox.addEventListener('change', (e) => {
+      categoryVisibility[category] = e.target.checked;
+      label.classList.toggle('active', e.target.checked);
+      saveCategoryVisibility();
+      renderAllBosses(currentData);
+    });
 
-    filtersContainer.appendChild(wrapper);
+    filtersContainer.appendChild(label);
   });
 }
 
@@ -510,7 +507,7 @@ function renderAllBosses(data) {
   // Create combined categories including dynamic "Other Bosses"
   const allCategories = { ...bossCategories };
   if (otherBossKills.length > 0) {
-    allCategories["Other Bosses"] = {}; // Empty object, we'll handle this specially
+    allCategories["Other Bosses"] = {};
   }
 
   Object.entries(allCategories).forEach(([categoryName, bosses]) => {
@@ -530,7 +527,7 @@ function renderAllBosses(data) {
     if (categoryName === "Other Bosses") {
       bossesGrid.className = "flex justify-center";
       const centerWrapper = document.createElement("div");
-      centerWrapper.className = "w-full max-w-4xl"; // Wider for the table
+      centerWrapper.className = "w-full max-w-4xl";
       const otherBossesCard = createOtherBossesCard(otherBossKills);
       centerWrapper.appendChild(otherBossesCard);
       bossesGrid.appendChild(centerWrapper);
@@ -614,25 +611,22 @@ function renderCategoryFilters() {
     checkbox.type = 'checkbox';
     checkbox.id = `filter-${category}`;
     checkbox.checked = categoryVisibility[category];
-    checkbox.className = 'form-checkbox h-5 w-5 text-blue-500 rounded focus:ring focus:ring-blue-300';
-
-    checkbox.addEventListener('change', (e) => {
-      categoryVisibility[category] = e.target.checked;
-      saveCategoryVisibility();
-      renderAllBosses(currentData); // Re-render bosses
-    });
+    checkbox.className = 'sr-only';
 
     const label = document.createElement('label');
     label.htmlFor = `filter-${category}`;
-    label.className = 'text-sm text-gray-300 ml-2';
-    label.textContent = category;
+    label.className = 'filter-pill' + (categoryVisibility[category] ? ' active' : '');
+    label.appendChild(checkbox);
+    label.appendChild(document.createTextNode(category));
 
-    const wrapper = document.createElement('div');
-    wrapper.className = 'flex items-center gap-2';
-    wrapper.appendChild(checkbox);
-    wrapper.appendChild(label);
+    checkbox.addEventListener('change', (e) => {
+      categoryVisibility[category] = e.target.checked;
+      label.classList.toggle('active', e.target.checked);
+      saveCategoryVisibility();
+      renderAllBosses(currentData);
+    });
 
-    filtersContainer.appendChild(wrapper);
+    filtersContainer.appendChild(label);
   });
 }
 
@@ -669,14 +663,14 @@ function initSwingSpeedModal() {
   const btnClose = document.getElementById("swing-speed-close");
   const btnClose2 = document.getElementById("swing-speed-close-btn");
   const backdrop = document.getElementById("swing-speed-backdrop");
-  const btnCalculate = document.getElementById("swing-speed-calculate");
-  const resultsDiv = document.getElementById("swing-speed-results");
   const resultText = document.getElementById("swing-speed-result-text");
   const disclaimerText = document.getElementById("swing-speed-disclaimer");
+  const inputs = ["mainhand-speed", "offhand-speed", "quickness", "toa-melee-speed", "haste", "celerity"];
 
   function openModal() {
     modal.classList.remove("hidden");
     modal.setAttribute("aria-hidden", "false");
+    runSwingCalc();
   }
 
   function closeModal() {
@@ -699,6 +693,37 @@ function initSwingSpeedModal() {
     infoModal.setAttribute("aria-hidden", "true");
   }
 
+  function runSwingCalc() {
+    const mhWeaponSpeed = validateSwingInput(document.getElementById("mainhand-speed"), true);
+    const ohWeaponSpeed = validateSwingInput(document.getElementById("offhand-speed"), true);
+    const quickness = validateSwingInput(document.getElementById("quickness"), true) ?? 0;
+    const toa = validateSwingInput(document.getElementById("toa-melee-speed"), true) ?? 0;
+    const haste = validateSwingInput(document.getElementById("haste"), true) ?? 0;
+    const celerity = validateSwingInput(document.getElementById("celerity"), true) ?? 0;
+
+    if (mhWeaponSpeed == null) {
+      resultText.textContent = "—";
+      disclaimerText.textContent = "";
+      disclaimerText.classList.remove("font-semibold", "text-amber-400");
+      return;
+    }
+
+    let speed = calculateSwingSpeed(mhWeaponSpeed, quickness, toa, haste, celerity);
+    const ohSpeed = ohWeaponSpeed != null ? calculateSwingSpeed(ohWeaponSpeed, quickness, toa, haste, celerity) : null;
+    if (ohSpeed != null) {
+      speed = Math.round((speed + ohSpeed) / 2 * 100) / 100;
+    }
+
+    resultText.textContent = speed + "s";
+    if (speed < 1.5) {
+      disclaimerText.textContent = "Effective cap is 1.5s";
+      disclaimerText.classList.add("font-semibold", "text-amber-400");
+    } else {
+      disclaimerText.textContent = "";
+      disclaimerText.classList.remove("font-semibold", "text-amber-400");
+    }
+  }
+
   btnInfo.addEventListener("click", openInfoModal);
   infoBackdrop.addEventListener("click", closeInfoModal);
   infoClose.addEventListener("click", closeInfoModal);
@@ -709,31 +734,9 @@ function initSwingSpeedModal() {
   btnClose2.addEventListener("click", closeModal);
   backdrop.addEventListener("click", closeModal);
 
-  btnCalculate.addEventListener("click", function () {
-    const mhWeaponSpeed = validateSwingInput(document.getElementById("mainhand-speed"), false);
-    const ohWeaponSpeed = validateSwingInput(document.getElementById("offhand-speed"), true);
-    const quickness = validateSwingInput(document.getElementById("quickness"), false) ?? 0;
-    const toa = validateSwingInput(document.getElementById("toa-melee-speed"), true) ?? 0;
-    const haste = validateSwingInput(document.getElementById("haste"), true) ?? 0;
-    const celerity = validateSwingInput(document.getElementById("celerity"), true) ?? 0;
-
-    if (mhWeaponSpeed == null) return;
-
-    let speed = calculateSwingSpeed(mhWeaponSpeed, quickness, toa, haste, celerity);
-    const ohSpeed = ohWeaponSpeed != null ? calculateSwingSpeed(ohWeaponSpeed, quickness, toa, haste, celerity) : null;
-    if (ohSpeed != null) {
-      speed = Math.round((speed + ohSpeed) / 2 * 100) / 100;
-    }
-
-    resultText.textContent = speed + "s";
-    if (speed < 1.5) {
-      disclaimerText.textContent = "1.5s is the cap swing speed.";
-      disclaimerText.classList.add("font-semibold", "text-amber-400");
-    } else {
-      disclaimerText.textContent = "You will swing every " + speed + " seconds.";
-      disclaimerText.classList.remove("font-semibold", "text-amber-400");
-    }
-    resultsDiv.classList.remove("hidden");
+  inputs.forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener("input", runSwingCalc);
   });
 }
 

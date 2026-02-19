@@ -68,6 +68,14 @@
       border-radius: 0.5rem;
       padding: 0.75rem 1rem;
     }
+    .swing-speed-result-box {
+      background: rgba(59, 130, 246, 0.12);
+      border: 1px solid rgba(96, 165, 250, 0.35);
+      border-radius: 0.5rem;
+      padding: 1rem 1.25rem;
+      text-align: center;
+      box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.1);
+    }
     .buffs-result-box {
       padding: 1rem 1.25rem;
     }
@@ -149,6 +157,42 @@
     .realm-radio-card.realm-albion .realm-dot { background: rgb(249, 102, 105); }
     .realm-radio-card.realm-hibernia .realm-dot { background: rgb(68, 213, 108); }
     .realm-radio-card.selected .realm-dot { opacity: 1; transform: scale(1.2); }
+    /* Category filter pills */
+    .filter-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 9999px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s ease;
+      background: rgb(55, 65, 81);
+      border: 1px solid rgb(75, 85, 99);
+      color: rgb(229, 231, 235);
+      appearance: none;
+    }
+    .filter-pill:hover {
+      background: rgb(75, 85, 99);
+      border-color: rgb(107, 114, 128);
+      transform: translateY(-1px);
+    }
+    .filter-pill.active {
+      background: rgba(59, 130, 246, 0.2);
+      border-color: rgba(96, 165, 250, 0.5);
+      color: rgb(191, 219, 254);
+      box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.2);
+    }
+    .filter-toolbar .filter-pill {
+      background: rgb(45, 55, 72);
+      border-color: rgb(65, 75, 92);
+    }
+    .filter-toolbar .filter-pill:hover {
+      background: rgb(55, 65, 81);
+    }
   </style>
 </head>
 
@@ -165,8 +209,8 @@
       <div class="text-center">
         <h1 class="text-4xl font-bold text-blue-400">Eden DAoC Boss Spawn Timers</h1>
         <p class="text-gray-400 mt-2">Live updates from Discord kill feed, made by Frick</p>
+        <p class="text-sm text-gray-500 mt-0">bonus math: <button type="button" id="swing-speed-btn" class="focus:outline-none bg-transparent border-0 cursor-pointer p-0 font-inherit">Swing Speed</button> & <button type="button" id="buffs-cap-btn" class="focus:outline-none bg-transparent border-0 cursor-pointer p-0 font-inherit">Buff Caps</button></p>
         <p class="text-sm text-gray-400 mt-0">email: frick@wtfrickisup.com</p>
-        <p class="text-sm text-gray-500 mt-0">...and a <button type="button" id="swing-speed-btn" class="focus:outline-none bg-transparent border-0 cursor-pointer p-0 font-inherit">Swing Speed Calculator</button> and a <button type="button" id="buffs-cap-btn" class="focus:outline-none bg-transparent border-0 cursor-pointer p-0 font-inherit">Buffs Cap Calculator</button></p>
       </div>
 
       <!-- Right Image -->
@@ -175,13 +219,14 @@
 
     <!-- Category Filters -->
     <div id="category-filters"
-      class="flex flex-wrap justify-center gap-4 p-4 bg-gray-800 text-white rounded-lg shadow">
+      class="flex flex-wrap justify-center gap-3 px-4 pt-4 bg-gray-800 text-white rounded-lg shadow">
       <!-- Checkboxes will be dynamically added here -->
     </div>
+    <p class="text-xs text-center pb-2 text-gray-300">Click to show or hide categories</p>
   </div>
 
   <!-- Update Info -->
-  <div class="update-bar text-center text-gray-400 flex flex-wrap justify-center items-center gap-2 py-2">
+  <div class="update-bar text-center text-gray-300 flex flex-col items-center gap-1">
     <div id="update-info"></div>
   </div>
  
@@ -190,13 +235,13 @@
     <div id="swing-speed-backdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm" aria-hidden="true"></div>
     <div class="relative flex min-h-full items-center justify-center p-4">
       <div class="swing-modal-panel relative w-full max-w-lg rounded-xl p-6 text-gray-200">
-        <div class="flex justify-between items-start gap-4 mb-3">
-          <div>
+        <div class="relative mb-3">
+          <div class="text-center pr-10">
             <h3 class="text-xl font-semibold text-white">Swing Speed Calculator</h3>
             <p class="text-sm text-gray-400 mt-1.5">Target <strong class="text-amber-400">1.5s</strong> cap between weapons, quickness, TOA, haste, celerity.</p>
-            <button type="button" id="swing-speed-info-btn" class="text-xs text-blue-400 hover:text-blue-300 mt-2 focus:outline-none underline">How it’s calculated</button>
+            <button type="button" id="swing-speed-info-btn-header" class="hidden text-sm text-blue-400 hover:text-blue-300 mt-2 focus:outline-none underline">How it’s calculated</button>
           </div>
-          <button type="button" id="swing-speed-close" class="text-gray-400 hover:text-white focus:outline-none text-2xl leading-none w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-600/50 transition-colors flex-shrink-0" aria-label="Close">&times;</button>
+          <button type="button" id="swing-speed-close" class="absolute top-0 right-0 text-gray-400 hover:text-white focus:outline-none text-2xl leading-none w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-600/50 transition-colors" aria-label="Close">&times;</button>
         </div>
         <form id="swing-speed-form" class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mt-5">
           <div class="space-y-4">
@@ -228,15 +273,16 @@
             </div>
           </div>
         </form>
-        <div id="swing-speed-results" class="mt-5 hidden">
-          <div class="swing-result-box">
-            <p id="swing-speed-result-text" class="text-lg font-semibold text-blue-400"></p>
-            <p id="swing-speed-disclaimer" class="text-sm text-gray-400 mt-1 transition-colors"></p>
+        <div id="swing-speed-results" class="mt-5">
+          <div class="swing-result-box swing-speed-result-box">
+            <p class="text-xs text-gray-500 uppercase tracking-wide mb-1">Your swing speed</p>
+            <p id="swing-speed-result-text" class="text-lg font-semibold text-blue-400">—</p>
+            <p id="swing-speed-disclaimer" class="text-sm text-gray-400 mt-1"></p>
           </div>
         </div>
-        <div class="mt-5 flex gap-3">
-          <button type="button" id="swing-speed-calculate" class="swing-btn-calc rounded-lg px-5 py-2.5 font-medium focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-gray-800">Calculate</button>
+        <div class="mt-5 flex justify-between items-center">
           <button type="button" id="swing-speed-close-btn" class="swing-btn-close rounded-lg px-5 py-2.5 font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-colors">Close</button>
+          <button type="button" id="swing-speed-info-btn" class="text-sm text-blue-400 hover:text-blue-300 focus:outline-none underline">How it's calculated</button>
         </div>
       </div>
     </div>
