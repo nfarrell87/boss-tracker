@@ -478,6 +478,8 @@ function init() {
   const active = getActiveCharacter();
   loadLevelsIntoTable(active?.levels || {});
 
+  recalculate();
+
   renderTabs();
   updateTimestampDisplay();
 
