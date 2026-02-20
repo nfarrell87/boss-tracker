@@ -636,21 +636,6 @@ function renderAllBosses(data) {
       categoryCard.appendChild(bossesGrid);
       categoriesGrid.appendChild(categoryCard);
     });
-
-    // Other Bosses gets its own full-width row below
-    if (otherBossKills.length > 0 && categoryVisibility["Other Bosses"]) {
-      const otherSection = document.createElement("div");
-      otherSection.className = "w-full flex flex-col items-center";
-      const otherTitle = document.createElement("h2");
-      otherTitle.className = "text-2xl font-bold accent-text mb-4 border-b-2 accent-border-bottom pb-2";
-      otherTitle.textContent = "Other Bosses";
-      otherSection.appendChild(otherTitle);
-      const centerWrapper = document.createElement("div");
-      centerWrapper.className = "w-full max-w-4xl";
-      centerWrapper.appendChild(createOtherBossesCard(otherBossKills));
-      otherSection.appendChild(centerWrapper);
-      container.appendChild(otherSection);
-    }
   } else {
     // Detailed: each category in its own section
     Object.entries(allCategories).forEach(([categoryName, bosses]) => {
