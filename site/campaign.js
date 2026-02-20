@@ -45,22 +45,22 @@ const TASK_REWARD_EXTENDED = [...TASK_REWARD, 120, 130, 140, 150, 160];
 // Campaign Total: cumulative XP to reach each campaign level (index = level)
 const CAMPAIGN_TOTAL = [0, 100, 300, 500, 800, 1100, 1500, 1900, 2400, 2900, 3500];
 
-// 21 tasks with names and max levels
+// 21 tasks with names and max levels (only Player Kills goes beyond 10)
 const TASKS = [
-  { name: "Big Game Hunter", maxLevel: 12 },
-  { name: "Capture or Defend Keeps", maxLevel: 12 },
-  { name: "Capture or Defend Relics", maxLevel: 12 },
-  { name: "Capture or Defend Towers", maxLevel: 12 },
-  { name: "Consider Yourself Evicted", maxLevel: 12 },
-  { name: "Deliver War Supplies", maxLevel: 12 },
-  { name: "Destroy Enemy Golems and Laborer", maxLevel: 12 },
-  { name: "Frontline Participant", maxLevel: 14 },
-  { name: "I Was Tired of Sitting Around", maxLevel: 14 },
-  { name: "Kill The Behemoths", maxLevel: 14 },
-  { name: "Maybe We Get Things Moving", maxLevel: 12 },
-  { name: "Participate in Large Fair Fights", maxLevel: 12 },
-  { name: "Participate in Large PVP Events", maxLevel: 12 },
-  { name: "Participate in Small Fair Fights", maxLevel: 12 },
+  { name: "Big Game Hunter", maxLevel: 10 },
+  { name: "Capture or Defend Keeps", maxLevel: 10 },
+  { name: "Capture or Defend Relics", maxLevel: 10 },
+  { name: "Capture or Defend Towers", maxLevel: 10 },
+  { name: "Consider Yourself Evicted", maxLevel: 10 },
+  { name: "Deliver War Supplies", maxLevel: 10 },
+  { name: "Destroy Enemy Golems and Laborer", maxLevel: 10 },
+  { name: "Frontline Participant", maxLevel: 10 },
+  { name: "I Was Tired of Sitting Around", maxLevel: 10 },
+  { name: "Kill The Behemoths", maxLevel: 10 },
+  { name: "Maybe We Get Things Moving", maxLevel: 10 },
+  { name: "Participate in Large Fair Fights", maxLevel: 10 },
+  { name: "Participate in Large PVP Events", maxLevel: 10 },
+  { name: "Participate in Small Fair Fights", maxLevel: 10 },
   { name: "Player Kills", maxLevel: 15 },
   { name: "Taste of Blood Participant", maxLevel: 10 },
   { name: "Taste of Blood Victor", maxLevel: 10 },
@@ -72,7 +72,7 @@ const TASKS = [
 
 // Rewards by campaign level
 const REWARDS = {
-  0: "Relic realm points multiplied against campaign level",
+  0: "No rewards yet - complete tasks to reach level 1 and earn rewards.",
   1: "Relic realm points multiplied against campaign level",
   2: `Relic realm points multiplied against campaign level
 Champion level or alchemy supply sack
