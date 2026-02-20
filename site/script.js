@@ -404,10 +404,6 @@ function createBossCard(bossName, boss, history, realm = null, condensed = false
         ${displayName}
         ${alias ? `<br /><span class="text-sm text-gray-400">(${alias})</span>` : ""}
       </h3>
-      <p class="text-xs text-gray-400 text-right flex-shrink-0 w-2/5">
-        Base Respawn Time: ${formatDeltaMinutes(respawnTime)}<br />
-        (+/- 20%)
-      </p>
     </div>
     ${latestKill
       ? isAlive
@@ -427,6 +423,7 @@ function createBossCard(bossName, boss, history, realm = null, condensed = false
               Latest Spawn: <span class="text-red-400">${latestIn !== null ? formatDeltaMinutes(latestIn) : "N/A"}</span>
             </p>`
       : `<p class="text-sm text-gray-500 mb-4">No kills recorded yet.</p>`}
+    <p class="text-xs text-gray-400 mb-3">Base Respawn Time: ${formatDeltaMinutes(respawnTime)} (+/- 20%)</p>
     <div class="mt-4">
       <table id="${tableId}" class="boss-history-table table-auto w-full text-left text-sm border border-gray-700" data-boss="${bossName}" data-realm="${realm || 'all'}">
         <thead class="text-gray-200" style="background: rgba(24, 30, 42, 0.9);">
