@@ -260,6 +260,14 @@ function getRealmBorderClass(realm) {
   }
 }
 
+function condensedAlias(alias) {
+  if (!alias) return '';
+  if (alias === 'Dragon of Albion') return 'Alb';
+  if (alias === 'Dragon of Hibernia') return 'Hib';
+  if (alias === 'Dragon of Midgard') return 'Mid';
+  return alias;
+}
+
 function createBossCard(bossName, boss, history, realm = null, condensed = false) {
   const now = Math.floor(Date.now() / 1000);
   const { respawnTime, alias } = boss;
@@ -321,7 +329,8 @@ function createBossCard(bossName, boss, history, realm = null, condensed = false
     condensedCard.setAttribute('data-realm', realm || 'all');
     condensedCard.setAttribute('data-respawn-time', respawnTime);
     const namePart = realm ? bossName : displayName;
-    const descPart = alias ? ` <span class="text-gray-400 text-sm">(${alias})</span>` : '';
+    const shortAlias = condensedAlias(alias);
+    const descPart = shortAlias ? ` <span class="text-gray-400 text-sm">(${shortAlias})</span>` : '';
     const fullLabel = [namePart, alias ? `(${alias})` : ''].filter(Boolean).join(' ');
     const windowTooltip = isInSpawnWindow && latestIn != null
       ? `Could be up now or anytime within the next ${formatDeltaMinutes(latestIn)}`
@@ -329,7 +338,7 @@ function createBossCard(bossName, boss, history, realm = null, condensed = false
     condensedCard.setAttribute('title', windowTooltip);
     condensedCard.innerHTML = `
       <div class="flex-grow min-w-0 truncate">
-        <span class="font-semibold text-orange-200 text-sm">${namePart}${descPart}</span>
+        <span class="font-semibold boss-name-condensed text-sm">${namePart}${descPart}</span>
       </div>
       <div class="flex items-center gap-2 flex-shrink-0">
         <span class="status-indicator ${indicatorClass}" aria-hidden="true"></span>
@@ -391,7 +400,7 @@ function createBossCard(bossName, boss, history, realm = null, condensed = false
 
   bossCard.innerHTML = `
     <div class="flex justify-between items-center mb-2">
-      <h3 class="text-xl font-semibold text-orange-200 flex-grow text-left leading-none">
+      <h3 class="text-xl font-semibold boss-name flex-grow text-left leading-none">
         ${displayName}
         ${alias ? `<br /><span class="text-sm text-gray-400">(${alias})</span>` : ""}
       </h3>
@@ -520,7 +529,7 @@ function createOtherBossesCard(otherBossKills) {
 
   bossCard.innerHTML = `
     <div class="flex justify-between items-center mb-2">
-      <h3 class="text-xl font-semibold text-orange-200 flex-grow text-left leading-none">
+      <h3 class="text-xl font-semibold accent-text flex-grow text-left leading-none">
         Other Bosses
         <br /><span class="text-sm text-gray-400">(Last 50 kills)</span>
       </h3>
@@ -623,7 +632,7 @@ function renderAllBosses(data) {
       const categoryCard = document.createElement("div");
       categoryCard.className = "category-card flex flex-col h-full max-w-full";
       const title = document.createElement("h3");
-      title.className = "text-base font-bold text-orange-200 mb-2 pb-1.5 border-b border-orange-500/50";
+      title.className = "text-base font-bold accent-text mb-2 pb-1.5 border-b accent-border-bottom";
       title.textContent = categoryName;
       categoryCard.appendChild(title);
       const bossesGrid = buildBossesGrid(categoryName, bosses, data, true);
@@ -636,7 +645,7 @@ function renderAllBosses(data) {
       const otherSection = document.createElement("div");
       otherSection.className = "w-full flex flex-col items-center";
       const otherTitle = document.createElement("h2");
-      otherTitle.className = "text-2xl font-bold text-orange-200 mb-4 border-b-2 border-orange-500 pb-2";
+      otherTitle.className = "text-2xl font-bold accent-text mb-4 border-b-2 accent-border-bottom pb-2";
       otherTitle.textContent = "Other Bosses";
       otherSection.appendChild(otherTitle);
       const centerWrapper = document.createElement("div");
