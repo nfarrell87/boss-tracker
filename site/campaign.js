@@ -61,7 +61,7 @@ const TASKS = [
   { name: "Participate in Large Fair Fights", maxLevel: 10 },
   { name: "Participate in Large PVP Events", maxLevel: 10 },
   { name: "Participate in Small Fair Fights", maxLevel: 10 },
-  { name: "Player Kills", maxLevel: 15 },
+  { name: "Player Kills", maxLevel: 100 },
   { name: "Taste of Blood Participant", maxLevel: 10 },
   { name: "Taste of Blood Victor", maxLevel: 10 },
   { name: "Timed Mission Completion", maxLevel: 10 },
