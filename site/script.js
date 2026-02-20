@@ -46,6 +46,7 @@ const bossCategories = {
 };
 
 const categoryVisibility = JSON.parse(localStorage.getItem('categoryVisibility')) || {};
+let condensedView = localStorage.getItem('condensedView') === 'true'; // default: false (Detailed view)
 
 // Save visibility state to localStorage
 function saveCategoryVisibility() {
@@ -259,7 +260,7 @@ function getRealmBorderClass(realm) {
   }
 }
 
-function createBossCard(bossName, boss, history, realm = null) {
+function createBossCard(bossName, boss, history, realm = null, condensed = false) {
   const now = Math.floor(Date.now() / 1000);
   const { respawnTime, alias } = boss;
   
@@ -291,10 +292,51 @@ function createBossCard(bossName, boss, history, realm = null) {
   const borderClass = realm ? getRealmBorderClass(realm) : '';
   // Get status glow class (red=down, yellow=in window, green=up)
   let statusClass = '';
+  let statusText = '—';
+  let indicatorClass = 'status-indicator-unknown';
   if (latestKill) {
-    if (isAlive) statusClass = 'boss-status-up';
-    else if (isInSpawnWindow) statusClass = 'boss-status-window';
-    else statusClass = 'boss-status-down';
+    if (isAlive) {
+      statusClass = 'boss-status-up';
+      statusText = 'UP';
+      indicatorClass = 'status-indicator-up';
+    } else if (isInSpawnWindow) {
+      statusClass = 'boss-status-window';
+      statusText = latestIn != null ? `Up in ≤ ${formatDeltaMinutes(latestIn)}` : 'IN WINDOW';
+      indicatorClass = 'status-indicator-window';
+    } else {
+      statusClass = 'boss-status-down';
+      statusText = 'DOWN';
+      indicatorClass = 'status-indicator-down';
+    }
+  }
+
+  if (condensed) {
+    const bossId = bossName.toLowerCase().replace(/\s+/g, '-');
+    const realmSuffix = realm ? `-${realm.toLowerCase()}` : '';
+    const cardId = `boss-card-${bossId}${realmSuffix}`;
+    const condensedCard = document.createElement("div");
+    condensedCard.className = `boss-card condensed text-white rounded-lg flex items-center justify-between gap-3 ${statusClass || ''} ${borderClass}`;
+    condensedCard.id = cardId;
+    condensedCard.setAttribute('data-boss-name', bossName);
+    condensedCard.setAttribute('data-realm', realm || 'all');
+    condensedCard.setAttribute('data-respawn-time', respawnTime);
+    const namePart = realm ? bossName : displayName;
+    const descPart = alias ? ` <span class="text-gray-400 text-sm">(${alias})</span>` : '';
+    const fullLabel = [namePart, alias ? `(${alias})` : ''].filter(Boolean).join(' ');
+    const windowTooltip = isInSpawnWindow && latestIn != null
+      ? `Could be up now or anytime within the next ${formatDeltaMinutes(latestIn)}`
+      : fullLabel;
+    condensedCard.setAttribute('title', windowTooltip);
+    condensedCard.innerHTML = `
+      <div class="flex-grow min-w-0 truncate">
+        <span class="font-semibold text-orange-200 text-sm">${namePart}${descPart}</span>
+      </div>
+      <div class="flex items-center gap-2 flex-shrink-0">
+        <span class="status-indicator ${indicatorClass}" aria-hidden="true"></span>
+        <span class="text-sm font-medium whitespace-nowrap ${isInSpawnWindow ? '' : 'uppercase'}">${statusText}</span>
+      </div>
+    `;
+    return condensedCard;
   }
 
   const historyRows = filteredHistory.length > 0
@@ -341,7 +383,7 @@ function createBossCard(bossName, boss, history, realm = null) {
   const cardId = `boss-card-${bossId}${realmSuffix}`;
 
   const bossCard = document.createElement("div");
-  bossCard.className = `boss-card bg-gray-700 text-white rounded-lg p-4 ${statusClass || ''} ${borderClass}`;
+  bossCard.className = `boss-card text-white rounded-lg p-4 ${statusClass || ''} ${borderClass}`;
   bossCard.id = cardId;
   bossCard.setAttribute('data-boss-name', bossName);
   bossCard.setAttribute('data-realm', realm || 'all');
@@ -378,7 +420,7 @@ function createBossCard(bossName, boss, history, realm = null) {
       : `<p class="text-sm text-gray-500 mb-4">No kills recorded yet.</p>`}
     <div class="mt-4">
       <table id="${tableId}" class="boss-history-table table-auto w-full text-left text-sm border border-gray-700" data-boss="${bossName}" data-realm="${realm || 'all'}">
-        <thead class="bg-gray-700 text-gray-200">
+        <thead class="text-gray-200" style="background: rgba(24, 30, 42, 0.9);">
           <tr>
             <th class="py-1 px-2">#</th>
             <th class="py-1 px-2">Time</th>
@@ -471,7 +513,7 @@ function createOtherBossesCard(otherBossKills) {
     : `<tr><td colspan="5" class="text-sm text-center text-gray-500 py-2">No other boss kills recorded yet</td></tr>`;
 
   const bossCard = document.createElement("div");
-  bossCard.className = `boss-card bg-gray-700 text-white rounded-lg p-4`;
+  bossCard.className = `boss-card text-white rounded-lg p-4`;
   bossCard.id = `boss-card-other-bosses`;
   bossCard.setAttribute('data-boss-name', 'Other Bosses');
   bossCard.setAttribute('data-realm', 'all');
@@ -485,7 +527,7 @@ function createOtherBossesCard(otherBossKills) {
     </div>
     <div class="mt-4">
       <table id="boss-table-other-bosses" class="boss-history-table table-auto w-full text-left text-sm border border-gray-700" data-boss="Other Bosses" data-realm="all">
-        <thead class="bg-gray-700 text-gray-200">
+        <thead class="text-gray-200" style="background: rgba(24, 30, 42, 0.9);">
           <tr>
             <th class="py-1 px-2">#</th>
             <th class="py-1 px-2">Boss</th>
@@ -504,101 +546,128 @@ function createOtherBossesCard(otherBossKills) {
   return bossCard;
 }
 
+function buildBossesGrid(categoryName, bosses, data, condensed) {
+  const bossesGrid = document.createElement("div");
+  if (categoryName === "Darkness Falls") {
+    bossesGrid.className = condensed
+      ? "flex flex-col gap-2"
+      : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-6";
+    Object.entries(bosses).forEach(([bossName, boss]) => {
+      bossesGrid.appendChild(createBossCard(bossName, boss, data[bossName] || [], null, condensed));
+    });
+  } else if (categoryName === "Summoner's Hall") {
+    bossesGrid.className = condensed
+      ? "flex flex-col gap-2"
+      : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6";
+    Object.entries(bosses).forEach(([bossName, boss]) => {
+      bossesGrid.appendChild(createBossCard(bossName, boss, data[bossName] || [], null, condensed));
+    });
+  } else {
+    const bossCount = Object.keys(bosses).reduce((count, bossName) => {
+      const boss = bosses[bossName];
+      return count + (boss.realms ? 3 : 1);
+    }, 0);
+    const gridClass = condensed
+      ? "flex flex-col gap-2"
+      : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6";
+    if (bossCount === 1 && !condensed) {
+      bossesGrid.className = "flex justify-center";
+      const centerWrapper = document.createElement("div");
+      centerWrapper.className = "w-full max-w-md";
+      bossesGrid.appendChild(centerWrapper);
+      Object.entries(bosses).forEach(([bossName, boss]) => {
+        if (boss.realms) {
+          ['Albion', 'Hibernia', 'Midgard'].forEach(realm => {
+            centerWrapper.appendChild(createBossCard(bossName, boss, data[bossName] || [], realm, condensed));
+          });
+        } else {
+          centerWrapper.appendChild(createBossCard(bossName, boss, data[bossName] || [], null, condensed));
+        }
+      });
+    } else {
+      bossesGrid.className = gridClass;
+      Object.entries(bosses).forEach(([bossName, boss]) => {
+        if (boss.realms) {
+          ['Albion', 'Hibernia', 'Midgard'].forEach(realm => {
+            bossesGrid.appendChild(createBossCard(bossName, boss, data[bossName] || [], realm, condensed));
+          });
+        } else {
+          bossesGrid.appendChild(createBossCard(bossName, boss, data[bossName] || [], null, condensed));
+        }
+      });
+    }
+  }
+  return bossesGrid;
+}
+
 function renderAllBosses(data) {
   const container = document.getElementById("boss-container");
   container.innerHTML = "";
 
-  // Get dynamic "Other Bosses" kills
   const otherBossKills = getOtherBosses(data);
-  
-  // Create combined categories including dynamic "Other Bosses"
   const allCategories = { ...bossCategories };
   if (otherBossKills.length > 0) {
     allCategories["Other Bosses"] = {};
   }
 
-  Object.entries(allCategories).forEach(([categoryName, bosses]) => {
-    if (!categoryVisibility[categoryName]) return;
+  if (condensedView) {
+    // Condensed: bundle all categories (except Other Bosses) into cards at top
+    const categoriesGrid = document.createElement("div");
+    categoriesGrid.className = "w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6 items-stretch";
+    container.appendChild(categoriesGrid);
 
-    const categorySection = document.createElement("div");
-    categorySection.className = "mb-8";
-    
-    const categoryTitle = document.createElement("h2");
-    categoryTitle.className = "text-2xl font-bold text-orange-200 mb-4 border-b-2 border-orange-500 pb-2";
-    categoryTitle.textContent = categoryName;
-    categorySection.appendChild(categoryTitle);
+    const categoryEntries = Object.entries(allCategories).filter(
+      ([name]) => name !== "Other Bosses" && categoryVisibility[name]
+    );
+    categoryEntries.forEach(([categoryName, bosses]) => {
+      const categoryCard = document.createElement("div");
+      categoryCard.className = "category-card flex flex-col h-full max-w-full";
+      const title = document.createElement("h3");
+      title.className = "text-base font-bold text-orange-200 mb-2 pb-1.5 border-b border-orange-500/50";
+      title.textContent = categoryName;
+      categoryCard.appendChild(title);
+      const bossesGrid = buildBossesGrid(categoryName, bosses, data, true);
+      categoryCard.appendChild(bossesGrid);
+      categoriesGrid.appendChild(categoryCard);
+    });
 
-    const bossesGrid = document.createElement("div");
-    
-    // Special handling for "Other Bosses"
-    if (categoryName === "Other Bosses") {
-      bossesGrid.className = "flex justify-center";
+    // Other Bosses gets its own full-width row below
+    if (otherBossKills.length > 0 && categoryVisibility["Other Bosses"]) {
+      const otherSection = document.createElement("div");
+      otherSection.className = "w-full flex flex-col items-center";
+      const otherTitle = document.createElement("h2");
+      otherTitle.className = "text-2xl font-bold text-orange-200 mb-4 border-b-2 border-orange-500 pb-2";
+      otherTitle.textContent = "Other Bosses";
+      otherSection.appendChild(otherTitle);
       const centerWrapper = document.createElement("div");
       centerWrapper.className = "w-full max-w-4xl";
-      const otherBossesCard = createOtherBossesCard(otherBossKills);
-      centerWrapper.appendChild(otherBossesCard);
-      bossesGrid.appendChild(centerWrapper);
+      centerWrapper.appendChild(createOtherBossesCard(otherBossKills));
+      otherSection.appendChild(centerWrapper);
+      container.appendChild(otherSection);
     }
-    // Special layout for specific categories
-    else if (categoryName === "Darkness Falls") {
-      bossesGrid.className = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-6";
-      
-      Object.entries(bosses).forEach(([bossName, boss]) => {
-        const bossCard = createBossCard(bossName, boss, data[bossName] || []);
-        bossesGrid.appendChild(bossCard);
-      });
-    } else if (categoryName === "Summoner's Hall") {
-      bossesGrid.className = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6";
-      
-      Object.entries(bosses).forEach(([bossName, boss]) => {
-        const bossCard = createBossCard(bossName, boss, data[bossName] || []);
-        bossesGrid.appendChild(bossCard);
-      });
-    } else {
-      // Default layout for other categories
-      const bossCount = Object.keys(bosses).reduce((count, bossName) => {
-        const boss = bosses[bossName];
-        return count + (boss.realms ? 3 : 1); // Count realm-specific bosses as 3
-      }, 0);
-      
-      if (bossCount === 1) {
-        // Center single boss cards
-        bossesGrid.className = "flex justify-center";
-        const centerWrapper = document.createElement("div");
-        centerWrapper.className = "w-full max-w-md";
-        bossesGrid.appendChild(centerWrapper);
-        
-        Object.entries(bosses).forEach(([bossName, boss]) => {
-          if (boss.realms) {
-            ['Albion', 'Hibernia', 'Midgard'].forEach(realm => {
-              const bossCard = createBossCard(bossName, boss, data[bossName] || [], realm);
-              centerWrapper.appendChild(bossCard);
-            });
-          } else {
-            const bossCard = createBossCard(bossName, boss, data[bossName] || []);
-            centerWrapper.appendChild(bossCard);
-          }
-        });
-      } else {
-        bossesGrid.className = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6";
-        
-        Object.entries(bosses).forEach(([bossName, boss]) => {
-          if (boss.realms) {
-            ['Albion', 'Hibernia', 'Midgard'].forEach(realm => {
-              const bossCard = createBossCard(bossName, boss, data[bossName] || [], realm);
-              bossesGrid.appendChild(bossCard);
-            });
-          } else {
-            const bossCard = createBossCard(bossName, boss, data[bossName] || []);
-            bossesGrid.appendChild(bossCard);
-          }
-        });
-      }
-    }
+  } else {
+    // Detailed: each category in its own section
+    Object.entries(allCategories).forEach(([categoryName, bosses]) => {
+      if (!categoryVisibility[categoryName]) return;
 
-    categorySection.appendChild(bossesGrid);
-    container.appendChild(categorySection);
-  });
+      const categorySection = document.createElement("div");
+      categorySection.className = "mb-8";
+      const categoryTitle = document.createElement("h2");
+      categoryTitle.className = "category-section-title text-2xl font-bold mb-4 pb-2";
+      categoryTitle.textContent = categoryName;
+      categorySection.appendChild(categoryTitle);
+
+      if (categoryName === "Other Bosses") {
+        const centerWrapper = document.createElement("div");
+        centerWrapper.className = "w-full max-w-4xl";
+        centerWrapper.appendChild(createOtherBossesCard(otherBossKills));
+        categorySection.appendChild(centerWrapper);
+      } else {
+        categorySection.appendChild(buildBossesGrid(categoryName, bosses, data, false));
+      }
+      container.appendChild(categorySection);
+    });
+  }
 }
 
 // Update the category visibility check to handle dynamic categories
@@ -927,8 +996,38 @@ function initBuffsCapModal() {
   inputItems.addEventListener("input", runBuffsCalc);
 }
 
+function updateViewToggle() {
+  const track = document.querySelector("#view-toggle .view-toggle-track");
+  const toggle = document.getElementById("view-toggle");
+  if (track && toggle) {
+    track.classList.remove("condensed", "detailed");
+    track.classList.add(condensedView ? "condensed" : "detailed");
+    toggle.setAttribute("aria-checked", condensedView ? "true" : "false");
+  }
+}
+
+function initViewToggle() {
+  const toggle = document.getElementById("view-toggle");
+  const options = document.querySelectorAll(".view-toggle-option");
+  if (toggle && options.length) {
+    updateViewToggle();
+    options.forEach((opt) => {
+      opt.addEventListener("click", () => {
+        const view = opt.getAttribute("data-view");
+        const newCondensed = view === "condensed";
+        if (newCondensed === condensedView) return;
+        condensedView = newCondensed;
+        localStorage.setItem("condensedView", condensedView);
+        updateViewToggle();
+        renderAllBosses(currentData);
+      });
+    });
+  }
+}
+
 // Start the data loading process
 loadBossData();
 setInterval(loadBossData, 60000); // Refresh every 60 seconds
+initViewToggle();
 initSwingSpeedModal();
 initBuffsCapModal();
