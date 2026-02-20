@@ -53,42 +53,6 @@ function saveCategoryVisibility() {
   localStorage.setItem('categoryVisibility', JSON.stringify(categoryVisibility));
 }
 
-// Render checkboxes for category filters
-function renderCategoryFilters() {
-  const filtersContainer = document.getElementById('category-filters');
-  filtersContainer.innerHTML = ''; // Clear existing filters
-
-  // Get all categories including potential "Other Bosses"
-  const allCategories = { ...bossCategories };
-  const otherBossKills = getOtherBosses(currentData);
-  if (otherBossKills.length > 0) {
-    allCategories["Other Bosses"] = {};
-  }
-
-  Object.keys(allCategories).forEach((category) => {
-    const checkbox = document.createElement('input');
-    checkbox.type = 'checkbox';
-    checkbox.id = `filter-${category}`;
-    checkbox.checked = categoryVisibility[category];
-    checkbox.className = 'sr-only';
-
-    const label = document.createElement('label');
-    label.htmlFor = `filter-${category}`;
-    label.className = 'filter-pill' + (categoryVisibility[category] ? ' active' : '');
-    label.appendChild(checkbox);
-    label.appendChild(document.createTextNode(category));
-
-    checkbox.addEventListener('change', (e) => {
-      categoryVisibility[category] = e.target.checked;
-      label.classList.toggle('active', e.target.checked);
-      saveCategoryVisibility();
-      renderAllBosses(currentData);
-    });
-
-    filtersContainer.appendChild(label);
-  });
-}
-
 function formatTimeFromNow(timestamp) {
   if (!timestamp) return "Unknown";
   const date = new Date(timestamp * 1000);
@@ -260,6 +224,24 @@ function getRealmBorderClass(realm) {
   }
 }
 
+function getRealmShort(realm) {
+  switch (realm) {
+    case 'Albion': return 'Alb';
+    case 'Hibernia': return 'Hib';
+    case 'Midgard': return 'Mid';
+    default: return '';
+  }
+}
+
+function getRealmColor(realm) {
+  switch (realm) {
+    case 'Albion': return '#f96669';
+    case 'Hibernia': return '#44d56c';
+    case 'Midgard': return '#46a4fe';
+    default: return 'transparent';
+  }
+}
+
 function condensedAlias(alias) {
   if (!alias) return '';
   if (alias === 'Dragon of Albion') return 'Alb';
@@ -330,13 +312,21 @@ function createBossCard(bossName, boss, history, realm = null, condensed = false
     condensedCard.setAttribute('data-respawn-time', respawnTime);
     const namePart = realm ? bossName : displayName;
     const shortAlias = condensedAlias(alias);
-    const descPart = shortAlias ? ` <span class="text-gray-400 text-sm">(${shortAlias})</span>` : '';
+    const realmShort = realm ? getRealmShort(realm) : '';
+    const suffix = realm
+      ? (realmShort === shortAlias ? realmShort : (realmShort + (shortAlias ? ' ' + shortAlias : '')).trim())
+      : shortAlias;
+    const descPart = suffix ? ` <span class="text-gray-400 text-sm">(${suffix})</span>` : '';
+    const realmBar = realm
+      ? `<div class="realm-bar flex-shrink-0 w-2 self-stretch rounded-l-lg min-h-[2rem]" style="background:${getRealmColor(realm)}"></div>`
+      : '';
     const fullLabel = [namePart, alias ? `(${alias})` : ''].filter(Boolean).join(' ');
     const windowTooltip = isInSpawnWindow && latestIn != null
       ? `Could be up now or anytime within the next ${formatDeltaMinutes(latestIn)}`
       : fullLabel;
     condensedCard.setAttribute('title', windowTooltip);
     condensedCard.innerHTML = `
+      ${realmBar}
       <div class="flex-grow min-w-0 truncate">
         <span class="font-semibold boss-name-condensed text-sm">${namePart}${descPart}</span>
       </div>
@@ -618,13 +608,16 @@ function renderAllBosses(data) {
 
   if (condensedView) {
     // Condensed: bundle all categories (except Other Bosses) into cards at top
+    const categoryEntries = Object.entries(allCategories).filter(
+      ([name]) => name !== "Other Bosses" && categoryVisibility[name] !== false
+    );
+    const categoryCount = categoryEntries.length;
     const categoriesGrid = document.createElement("div");
-    categoriesGrid.className = "w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6 items-stretch";
+    categoriesGrid.className = categoryCount <= 2
+      ? "w-full flex flex-wrap justify-center gap-4 mb-6 items-stretch"
+      : "w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6 items-stretch";
     container.appendChild(categoriesGrid);
 
-    const categoryEntries = Object.entries(allCategories).filter(
-      ([name]) => name !== "Other Bosses" && categoryVisibility[name]
-    );
     categoryEntries.forEach(([categoryName, bosses]) => {
       const categoryCard = document.createElement("div");
       categoryCard.className = "category-card flex flex-col h-full max-w-full";
@@ -664,7 +657,7 @@ function renderAllBosses(data) {
 // Update the category visibility check to handle dynamic categories
 function renderCategoryFilters() {
   const filtersContainer = document.getElementById('category-filters');
-  filtersContainer.innerHTML = ''; // Clear existing filters
+  filtersContainer.innerHTML = '';
 
   // Get all categories including potential "Other Bosses"
   const allCategories = { ...bossCategories };
@@ -674,22 +667,30 @@ function renderCategoryFilters() {
   }
 
   Object.keys(allCategories).forEach((category) => {
+    const isActive = categoryVisibility[category] !== false;
+    const isOtherBossesDisabled = category === 'Other Bosses' && condensedView;
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
     checkbox.id = `filter-${category}`;
-    checkbox.checked = categoryVisibility[category];
+    checkbox.checked = isActive;
+    checkbox.disabled = isOtherBossesDisabled;
     checkbox.className = 'sr-only';
 
     const label = document.createElement('label');
-    label.htmlFor = `filter-${category}`;
-    label.className = 'filter-pill' + (categoryVisibility[category] ? ' active' : '');
+    label.htmlFor = isOtherBossesDisabled ? '' : `filter-${category}`;
+    label.className = 'filter-pill' + (isActive ? ' active' : '') + (isOtherBossesDisabled ? ' filter-pill-disabled' : '');
     label.appendChild(checkbox);
     label.appendChild(document.createTextNode(category));
+
+    if (isOtherBossesDisabled) {
+      label.style.pointerEvents = 'none';
+    }
 
     checkbox.addEventListener('change', (e) => {
       categoryVisibility[category] = e.target.checked;
       label.classList.toggle('active', e.target.checked);
       saveCategoryVisibility();
+      renderCategoryFilters();
       renderAllBosses(currentData);
     });
 
@@ -1010,6 +1011,7 @@ function initViewToggle() {
         condensedView = newCondensed;
         localStorage.setItem("condensedView", condensedView);
         updateViewToggle();
+        renderCategoryFilters();
         renderAllBosses(currentData);
       });
     });
