@@ -4,7 +4,7 @@
  */
 (function () {
   const STORAGE_KEY = "eden-accent-hex";
-  const DEFAULT_HEX = "#efc636";
+  const DEFAULT_HEX = "#edebed";
 
   function hexToRgb(hex) {
     const m = hex.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i);
