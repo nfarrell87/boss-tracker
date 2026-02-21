@@ -483,7 +483,7 @@ function init() {
   renderTabs();
   updateTimestampDisplay();
 
-  // Refresh timestamp display every minute so "just now" becomes "1 min ago" etc.
+  // Refresh timestamp display every minute.
   setInterval(updateTimestampDisplay, 60000);
 
   const resetBtn = document.getElementById("campaign-reset");

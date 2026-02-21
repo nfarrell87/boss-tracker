@@ -133,7 +133,7 @@
       <img src="https://cdn-icons-png.freepik.com/512/477/477110.png" alt="Left Icon" class="h-16 w-auto" />
       <div class="text-center">
         <h1 class="text-4xl font-bold text-blue-400">Eden DAoC Campaign Calculator</h1>
-        <p class="text-gray-400 mt-2">S3 Campaign Level Calculator</p>
+        <p class="text-gray-400 mt-2">S3 Campaign Level Calculator <span class="text-gray-500 text-sm">V2.0</span></p>
         <p class="text-sm text-gray-500 mt-0"><a href="index.html" class="campaign-header-link focus:outline-none no-underline font-inherit inline-flex items-center gap-1"><span class="campaign-back-arrow">←</span> Boss Timers</a></p>
       </div>
       <img src="https://clipart-library.com/8300/dragon-head-drawing.png" alt="Right Icon" class="h-16 w-auto" />
@@ -228,10 +228,13 @@
       </div>
     </div>
 
-    <!-- Release Notes -->
-    <div class="mt-8 campaign-panel p-4">
-      <h2 class="text-lg font-semibold text-white mb-3">Release Notes</h2>
-      <div class="overflow-x-auto">
+    <!-- Release Notes (collapsible) -->
+    <details class="mt-8 campaign-panel group">
+      <summary class="campaign-howto-summary cursor-pointer list-none flex items-center justify-between gap-2 p-4 text-lg font-semibold text-white">
+        <span>Release Notes</span>
+        <span class="campaign-howto-chevron text-gray-400 transition-transform group-open:rotate-180">▼</span>
+      </summary>
+      <div class="px-4 pb-4 overflow-x-auto">
         <table class="w-full text-sm text-left">
           <thead>
             <tr class="border-b border-gray-600">
@@ -249,11 +252,12 @@
             <tr class="border-b border-gray-700"><td class="py-2 px-3">V1.4</td><td class="py-2 px-3">2025-09-13</td><td class="py-2 px-3">As per Ebenezer's insights, Small Fair Fight can go above level 10 so moving it on the same pattern as Player Kills to reach level 15. Applied the same logic to Large Fair Fight objective. Reward beyond level 13 is unlikely to be accurate. Release notes section now available to the public!</td></tr>
             <tr class="border-b border-gray-700"><td class="py-2 px-3">V1.5</td><td class="py-2 px-3">2025-10-22</td><td class="py-2 px-3">Added the two campaign missions related to PVP Events. (Win+Participate)</td></tr>
             <tr class="border-b border-gray-700"><td class="py-2 px-3">V1.5A</td><td class="py-2 px-3">2025-10-31</td><td class="py-2 px-3">Improved Barrel of Combined Regeneration added to Campaign level 10 rewards.</td></tr>
-            <tr class="border-b border-gray-700"><td class="py-2 px-3 font-medium text-blue-400">V1.6</td><td class="py-2 px-3">2026-01-16</td><td class="py-2 px-3">Added character name to the calculator page, which updates the tab name. Also whenever a task level is modified, a timestamp is written in G1 to allow better tracking on when you last updated the file. This gets blanked when clicking on reset button. Added instructions.</td></tr>
+            <tr class="border-b border-gray-700"><td class="py-2 px-3">V1.6</td><td class="py-2 px-3">2026-01-16</td><td class="py-2 px-3">Added character name to the calculator page, which updates the tab name. Also whenever a task level is modified, a timestamp is written in G1 to allow better tracking on when you last updated the file. This gets blanked when clicking on reset button. Added instructions.</td></tr>
+            <tr class="border-b border-gray-700"><td class="py-2 px-3 font-medium text-blue-400">V2.0</td><td class="py-2 px-3">2026-02-19</td><td class="py-2 px-3">Now fully functional web app on wtfrickisup.com :)</td></tr>
           </tbody>
         </table>
       </div>
-    </div>
+    </details>
 
     <!-- Credits -->
     <div class="mt-8 pt-6 border-t border-gray-700 text-center">
