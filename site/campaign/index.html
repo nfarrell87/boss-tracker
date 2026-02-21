@@ -122,6 +122,20 @@
     .campaign-task-highlight {
       background-color: rgba(255, 220, 100, 0.22);
     }
+    .release-notes-table th:nth-child(1),
+    .release-notes-table th:nth-child(2),
+    .release-notes-table td:nth-child(1),
+    .release-notes-table td:nth-child(2) {
+      white-space: nowrap;
+    }
+    .release-notes-table th:nth-child(1),
+    .release-notes-table td:nth-child(1) {
+      min-width: 5rem;
+    }
+    .release-notes-table th:nth-child(2),
+    .release-notes-table td:nth-child(2) {
+      min-width: 9rem;
+    }
   </style>
 </head>
 
@@ -235,7 +249,7 @@
         <span class="campaign-howto-chevron text-gray-400 transition-transform group-open:rotate-180">▼</span>
       </summary>
       <div class="px-4 pb-4 overflow-x-auto">
-        <table class="w-full text-sm text-left">
+        <table class="release-notes-table w-full text-sm text-left">
           <thead>
             <tr class="border-b border-gray-600">
               <th class="py-2 px-3 text-gray-400 font-medium">Version</th>
