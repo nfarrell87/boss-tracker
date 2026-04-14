@@ -175,6 +175,14 @@
       border-color: rgb(96, 165, 250);
       box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
     }
+    .swing-cap-range {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 0.25rem;
+      font-size: 0.6875rem;
+      color: rgb(100, 116, 139);
+      letter-spacing: 0.02em;
+    }
     .swing-modal-panel {
       background: linear-gradient(165deg, rgb(44, 52, 70) 0%, rgb(32, 38, 52) 50%, rgb(24, 30, 42) 100%);
       border: 1px solid rgba(75, 85, 99, 0.6);
@@ -373,29 +381,35 @@
           <div class="space-y-4">
             <div>
               <label for="mainhand-speed" class="block text-sm font-medium text-gray-300 mb-1">Mainhand Weapon Speed</label>
-              <input id="mainhand-speed" type="number" value="4.5" step="0.1" class="swing-input" />
+              <input id="mainhand-speed" type="number" value="4.5" min="1.5" max="6" step="0.1" class="swing-input" />
+              <div class="swing-cap-range" aria-hidden="true"><span>1.5</span><span>6.0</span></div>
             </div>
             <div>
               <label for="offhand-speed" class="block text-sm font-medium text-gray-300 mb-1">Offhand <span class="text-gray-500 font-normal">(optional)</span></label>
-              <input id="offhand-speed" type="number" placeholder="Leave blank for 1H" step="0.1" class="swing-input" />
+              <input id="offhand-speed" type="number" placeholder="Leave blank for 1H" min="1.5" max="6" step="0.1" class="swing-input" />
+              <div class="swing-cap-range" aria-hidden="true"><span>1.5</span><span>6.0</span></div>
             </div>
             <div>
-              <label for="quickness" class="block text-sm font-medium text-gray-300 mb-1">Quickness (250 cap)</label>
-              <input id="quickness" type="number" value="0" step="1" class="swing-input" />
+              <label for="quickness" class="block text-sm font-medium text-gray-300 mb-1">Quickness</label>
+              <input id="quickness" type="number" value="0" min="0" max="250" step="1" class="swing-input" />
+              <div class="swing-cap-range" aria-hidden="true"><span>0</span><span>250</span></div>
             </div>
           </div>
           <div class="space-y-4">
             <div>
               <label for="toa-melee-speed" class="block text-sm font-medium text-gray-300 mb-1">TOA Melee Speed (%)</label>
-              <input id="toa-melee-speed" type="number" value="0" step="1" class="swing-input" />
+              <input id="toa-melee-speed" type="number" value="0" min="0" max="10" step="1" class="swing-input" />
+              <div class="swing-cap-range" aria-hidden="true"><span>0</span><span>10</span></div>
             </div>
             <div>
               <label for="haste" class="block text-sm font-medium text-gray-300 mb-1">Haste (%)</label>
-              <input id="haste" type="number" value="0" step="1" class="swing-input" />
+              <input id="haste" type="number" value="0" min="0" max="20" step="1" class="swing-input" />
+              <div class="swing-cap-range" aria-hidden="true"><span>0</span><span>20</span></div>
             </div>
             <div>
               <label for="celerity" class="block text-sm font-medium text-gray-300 mb-1">Celerity (%)</label>
-              <input id="celerity" type="number" value="0" step="1" class="swing-input" />
+              <input id="celerity" type="number" value="0" min="0" max="37" step="1" class="swing-input" />
+              <div class="swing-cap-range" aria-hidden="true"><span>0</span><span>37</span></div>
             </div>
           </div>
         </form>

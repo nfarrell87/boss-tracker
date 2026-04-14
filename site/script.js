@@ -717,7 +717,11 @@ function getDecimal(percentage) {
 
 function calculateSwingSpeed(weaponSpeed, quickness, toa, haste, celerity) {
   if (weaponSpeed == null || isNaN(weaponSpeed)) return null;
-  if (quickness > 250) quickness = 250;
+  weaponSpeed = Math.max(1.5, Math.min(6, weaponSpeed));
+  quickness = Math.max(0, Math.min(250, quickness));
+  toa = Math.max(0, Math.min(10, toa));
+  haste = Math.max(0, Math.min(20, haste));
+  celerity = Math.max(0, Math.min(37, celerity));
   toa = getDecimal(toa);
   haste = getDecimal(haste);
   celerity = getDecimal(celerity);

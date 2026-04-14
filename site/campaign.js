@@ -4,7 +4,112 @@
  */
 
 const CHARACTERS_STORAGE_KEY = "campaignCharacters";
+const TASK_SCHEMA_VERSION = 3;
 const BASE_TITLE = "Eden DAoC Campaign Calculator";
+
+/** Task titles as stored for schema v1 (21 rows, historical calculator order). */
+const TASK_ORDER_V1 = [
+  "Big Game Hunter",
+  "Capture or Defend Keeps",
+  "Capture or Defend Relics",
+  "Capture or Defend Towers",
+  "Consider Yourself Evicted",
+  "Deliver War Supplies",
+  "Destroy Enemy Golems and Laborer",
+  "Frontline Participant",
+  "I Was Tired of Sitting Around",
+  "Kill The Behemoths",
+  "Maybe We Get Things Moving",
+  "Participate in Large Fair Fights",
+  "Participate in Large PVP Events",
+  "Participate in Small Fair Fights",
+  "Player Kills",
+  "Taste of Blood Participant",
+  "Taste of Blood Victor",
+  "Timed Mission Completion",
+  "Win in Large PVP Events",
+  "Win Large Fair Fights",
+  "Win Small Fair Fights",
+];
+
+/** Task titles for schema v2 (22 rows, between patch note and /campaign order update). */
+const TASK_ORDER_V2 = [
+  "Capture or Defend Keeps",
+  "Capture or Defend Relics",
+  "Capture or Defend Towers",
+  "Consider Yourself Evicted",
+  "Destroy Enemy Golems and Laborer",
+  "Frontier Kills",
+  "I Was Tired of Sitting Around",
+  "Dock Hunter",
+  "Participate In Exploratory Contract Missions",
+  "Construct!",
+  "Show Some Effort!",
+  "Maybe We Get Things Moving",
+  "Participate in Large Fair Fights",
+  "Participate in Large PVP Events",
+  "Participate in Small Fair Fights",
+  "Player Kills",
+  "Taste of Blood Participant",
+  "Taste of Blood Victor",
+  "Timed Mission Completion",
+  "Win in Large PVP Events",
+  "Win Large Fair Fights",
+  "Win Small Fair Fights",
+];
+
+/** Maps historical / alternate labels to current `TASKS[].name` (in-game /campaign strings). */
+const TASK_NAME_TO_CURRENT = {
+  "Capture or Defend Keeps": "Capture or Defend Keeps!",
+  "Consider Yourself Evicted": "Consider Yourself Evicted!",
+  "Destroy Enemy Golems and Laborer": "Destroy Enemy Golems and Laborers",
+  "Frontier Kills": "Frontline Participant",
+  "Kill The Behemoths": "Kill The Behemoths!",
+  "Maybe We Get Things Moving": "Maybe We Get Things Moving?",
+  "Participate in Large Fair Fights": "Participate in Large Fair Fights!",
+  "Participate in Large PVP Events": "Participate in Large PvP Missions",
+  "Participate in Small Fair Fights": "Participate in Small Fair Fights!",
+  "Participate In Exploratory Contract Missions": "Participate in Exploratory Contract Missions",
+  "Win in Large PVP Events": "Win in Large PvP Events",
+  "Win Large Fair Fights": "Win Large Fair Fights!",
+  "Win Small Fair Fights": "Win Small Fair Fights!",
+};
+
+function currentTaskIndexForStoredName(name) {
+  if (!name) return undefined;
+  const resolved = TASK_NAME_TO_CURRENT[name] ?? name;
+  const i = TASKS.findIndex((t) => t.name === resolved);
+  return i >= 0 ? i : undefined;
+}
+
+function migrateCharacterLevels(levels, fromSchemaVersion) {
+  if (!levels || typeof levels !== "object" || fromSchemaVersion >= TASK_SCHEMA_VERSION) {
+    return { ...levels };
+  }
+  const oldOrder = fromSchemaVersion <= 1 ? TASK_ORDER_V1 : TASK_ORDER_V2;
+  const next = {};
+  for (const [idxStr, val] of Object.entries(levels)) {
+    const oldName = oldOrder[Number(idxStr)];
+    const newIdx = currentTaskIndexForStoredName(oldName);
+    if (newIdx !== undefined) next[String(newIdx)] = val;
+  }
+  return next;
+}
+
+function migrateStoredCharactersIfNeeded(data) {
+  const ver = data.taskSchemaVersion ?? 1;
+  if (ver >= TASK_SCHEMA_VERSION) return data;
+  const migrated = {
+    ...data,
+    taskSchemaVersion: TASK_SCHEMA_VERSION,
+    characters: data.characters.map((c) => ({
+      ...c,
+      levels: migrateCharacterLevels(c.levels, ver),
+    })),
+  };
+  saveCharacters(migrated);
+  return migrated;
+}
 
 function generateId() {
   return "c_" + Date.now() + "_" + Math.random().toString(36).slice(2, 9);
@@ -17,17 +122,19 @@ function loadCharacters() {
       const data = JSON.parse(raw);
       if (data.characters?.length) {
         data.characters.forEach((c) => { if (c.lastUpdated === undefined) c.lastUpdated = null; });
-        return data;
+        return migrateStoredCharactersIfNeeded(data);
       }
     }
     // Migrate from old single-character format
     const oldName = localStorage.getItem("campaignCharacterName");
     return {
+      taskSchemaVersion: TASK_SCHEMA_VERSION,
       characters: [{ id: "main", name: oldName || "Main", levels: {}, lastUpdated: null }],
       activeId: "main",
     };
   } catch {
     return {
+      taskSchemaVersion: TASK_SCHEMA_VERSION,
       characters: [{ id: "main", name: "Main", levels: {}, lastUpdated: null }],
       activeId: "main",
     };
@@ -45,29 +152,33 @@ const TASK_REWARD_EXTENDED = [...TASK_REWARD, 120, 130, 140, 150, 160];
 // Campaign Total: cumulative XP to reach each campaign level (index = level)
 const CAMPAIGN_TOTAL = [0, 100, 300, 500, 800, 1100, 1500, 1900, 2400, 2900, 3500];
 
-// 21 tasks with names and max levels (only Player Kills goes beyond 10)
+// 25 tasks — order and titles match in-game `/campaign` (Apr 2026)
 const TASKS = [
-  { name: "Big Game Hunter", maxLevel: 10 },
-  { name: "Capture or Defend Keeps", maxLevel: 10 },
-  { name: "Capture or Defend Relics", maxLevel: 10 },
-  { name: "Capture or Defend Towers", maxLevel: 10 },
-  { name: "Consider Yourself Evicted", maxLevel: 10 },
-  { name: "Deliver War Supplies", maxLevel: 10 },
-  { name: "Destroy Enemy Golems and Laborer", maxLevel: 10 },
-  { name: "Frontline Participant", maxLevel: 10 },
-  { name: "I Was Tired of Sitting Around", maxLevel: 10 },
-  { name: "Kill The Behemoths", maxLevel: 10 },
-  { name: "Maybe We Get Things Moving", maxLevel: 10 },
-  { name: "Participate in Large Fair Fights", maxLevel: 10 },
-  { name: "Participate in Large PVP Events", maxLevel: 10 },
-  { name: "Participate in Small Fair Fights", maxLevel: 10 },
-  { name: "Player Kills", maxLevel: 100 },
+  { name: "Show Some Effort!", maxLevel: 10 },
   { name: "Taste of Blood Participant", maxLevel: 10 },
-  { name: "Taste of Blood Victor", maxLevel: 10 },
+  { name: "Maybe We Get Things Moving?", maxLevel: 10 },
   { name: "Timed Mission Completion", maxLevel: 10 },
-  { name: "Win in Large PVP Events", maxLevel: 10 },
-  { name: "Win Large Fair Fights", maxLevel: 10 },
-  { name: "Win Small Fair Fights", maxLevel: 10 },
+  { name: "Dock Hunter", maxLevel: 10 },
+  { name: "Capture or Defend Relics", maxLevel: 10 },
+  { name: "Frontline Participant", maxLevel: 10 },
+  { name: "Win Large Fair Fights!", maxLevel: 10 },
+  { name: "Player Kills", maxLevel: 100 },
+  { name: "Consider Yourself Evicted!", maxLevel: 10 },
+  { name: "Participate in Large PvP Missions", maxLevel: 10 },
+  { name: "Win in Large PvP Events", maxLevel: 10 },
+  { name: "Construct!", maxLevel: 10 },
+  { name: "Kill The Behemoths!", maxLevel: 10 },
+  { name: "Capture or Defend Keeps!", maxLevel: 10 },
+  { name: "Taste of Blood Victor", maxLevel: 10 },
+  { name: "Deliver War Supplies", maxLevel: 10 },
+  { name: "Capture or Defend Towers", maxLevel: 10 },
+  { name: "Participate in Small Fair Fights!", maxLevel: 10 },
+  { name: "Destroy Enemy Golems and Laborers", maxLevel: 10 },
+  { name: "Participate in Large Fair Fights!", maxLevel: 10 },
+  { name: "Win Small Fair Fights!", maxLevel: 10 },
+  { name: "Big Game Hunter", maxLevel: 10 },
+  { name: "I Was Tired of Sitting Around", maxLevel: 10 },
+  { name: "Participate in Exploratory Contract Missions", maxLevel: 10 },
 ];
 
 // Rewards by campaign level
