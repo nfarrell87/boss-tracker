@@ -4,7 +4,7 @@
  */
 
 const CHARACTERS_STORAGE_KEY = "campaignCharacters";
-const TASK_SCHEMA_VERSION = 3;
+const TASK_SCHEMA_VERSION = 4;
 const BASE_TITLE = "Eden DAoC Campaign Calculator";
 
 /** Task titles as stored for schema v1 (21 rows, historical calculator order). */
@@ -58,6 +58,35 @@ const TASK_ORDER_V2 = [
   "Win Small Fair Fights",
 ];
 
+/** Task titles for schema v3 (25 rows, matched in-game `/campaign` order before alphabetical sort). */
+const TASK_ORDER_V3 = [
+  "Show Some Effort!",
+  "Taste of Blood Participant",
+  "Maybe We Get Things Moving?",
+  "Timed Mission Completion",
+  "Dock Hunter",
+  "Capture or Defend Relics",
+  "Frontline Participant",
+  "Win Large Fair Fights!",
+  "Player Kills",
+  "Consider Yourself Evicted!",
+  "Participate in Large PvP Missions",
+  "Win in Large PvP Events",
+  "Construct!",
+  "Kill The Behemoths!",
+  "Capture or Defend Keeps!",
+  "Taste of Blood Victor",
+  "Deliver War Supplies",
+  "Capture or Defend Towers",
+  "Participate in Small Fair Fights!",
+  "Destroy Enemy Golems and Laborers",
+  "Participate in Large Fair Fights!",
+  "Win Small Fair Fights!",
+  "Big Game Hunter",
+  "I Was Tired of Sitting Around",
+  "Participate in Exploratory Contract Missions",
+];
+
 /** Maps historical / alternate labels to current `TASKS[].name` (in-game /campaign strings). */
 const TASK_NAME_TO_CURRENT = {
   "Capture or Defend Keeps": "Capture or Defend Keeps!",
@@ -86,7 +115,12 @@ function migrateCharacterLevels(levels, fromSchemaVersion) {
   if (!levels || typeof levels !== "object" || fromSchemaVersion >= TASK_SCHEMA_VERSION) {
     return { ...levels };
   }
-  const oldOrder = fromSchemaVersion <= 1 ? TASK_ORDER_V1 : TASK_ORDER_V2;
+  let oldOrder;
+  if (fromSchemaVersion <= 1) oldOrder = TASK_ORDER_V1;
+  else if (fromSchemaVersion === 2) oldOrder = TASK_ORDER_V2;
+  else if (fromSchemaVersion === 3) oldOrder = TASK_ORDER_V3;
+  else return { ...levels };
+
   const next = {};
   for (const [idxStr, val] of Object.entries(levels)) {
     const oldName = oldOrder[Number(idxStr)];
@@ -152,33 +186,33 @@ const TASK_REWARD_EXTENDED = [...TASK_REWARD, 120, 130, 140, 150, 160];
 // Campaign Total: cumulative XP to reach each campaign level (index = level)
 const CAMPAIGN_TOTAL = [0, 100, 300, 500, 800, 1100, 1500, 1900, 2400, 2900, 3500];
 
-// 25 tasks — order and titles match in-game `/campaign` (Apr 2026)
+// 25 tasks — same names as `/campaign`, sorted A–Z for the table
 const TASKS = [
+  { name: "Big Game Hunter", maxLevel: 10 },
+  { name: "Capture or Defend Keeps!", maxLevel: 10 },
+  { name: "Capture or Defend Relics", maxLevel: 10 },
+  { name: "Capture or Defend Towers", maxLevel: 10 },
+  { name: "Consider Yourself Evicted!", maxLevel: 10 },
+  { name: "Construct!", maxLevel: 10 },
+  { name: "Deliver War Supplies", maxLevel: 10 },
+  { name: "Destroy Enemy Golems and Laborers", maxLevel: 10 },
+  { name: "Dock Hunter", maxLevel: 10 },
+  { name: "Frontline Participant", maxLevel: 10 },
+  { name: "I Was Tired of Sitting Around", maxLevel: 10 },
+  { name: "Kill The Behemoths!", maxLevel: 10 },
+  { name: "Maybe We Get Things Moving?", maxLevel: 10 },
+  { name: "Participate in Exploratory Contract Missions", maxLevel: 10 },
+  { name: "Participate in Large Fair Fights!", maxLevel: 10 },
+  { name: "Participate in Large PvP Missions", maxLevel: 10 },
+  { name: "Participate in Small Fair Fights!", maxLevel: 10 },
+  { name: "Player Kills", maxLevel: 100 },
   { name: "Show Some Effort!", maxLevel: 10 },
   { name: "Taste of Blood Participant", maxLevel: 10 },
-  { name: "Maybe We Get Things Moving?", maxLevel: 10 },
-  { name: "Timed Mission Completion", maxLevel: 10 },
-  { name: "Dock Hunter", maxLevel: 10 },
-  { name: "Capture or Defend Relics", maxLevel: 10 },
-  { name: "Frontline Participant", maxLevel: 10 },
-  { name: "Win Large Fair Fights!", maxLevel: 10 },
-  { name: "Player Kills", maxLevel: 100 },
-  { name: "Consider Yourself Evicted!", maxLevel: 10 },
-  { name: "Participate in Large PvP Missions", maxLevel: 10 },
-  { name: "Win in Large PvP Events", maxLevel: 10 },
-  { name: "Construct!", maxLevel: 10 },
-  { name: "Kill The Behemoths!", maxLevel: 10 },
-  { name: "Capture or Defend Keeps!", maxLevel: 10 },
   { name: "Taste of Blood Victor", maxLevel: 10 },
-  { name: "Deliver War Supplies", maxLevel: 10 },
-  { name: "Capture or Defend Towers", maxLevel: 10 },
-  { name: "Participate in Small Fair Fights!", maxLevel: 10 },
-  { name: "Destroy Enemy Golems and Laborers", maxLevel: 10 },
-  { name: "Participate in Large Fair Fights!", maxLevel: 10 },
+  { name: "Timed Mission Completion", maxLevel: 10 },
+  { name: "Win in Large PvP Events", maxLevel: 10 },
+  { name: "Win Large Fair Fights!", maxLevel: 10 },
   { name: "Win Small Fair Fights!", maxLevel: 10 },
-  { name: "Big Game Hunter", maxLevel: 10 },
-  { name: "I Was Tired of Sitting Around", maxLevel: 10 },
-  { name: "Participate in Exploratory Contract Missions", maxLevel: 10 },
 ];
 
 // Rewards by campaign level
